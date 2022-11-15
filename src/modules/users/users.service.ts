@@ -11,4 +11,10 @@ export class UsersService {
 
     return users;
   }
+
+  async findUser(id: string): Promise<User> {
+    const user = await this.userRepository.findUser(id);
+
+    return user;
+  }
 }
