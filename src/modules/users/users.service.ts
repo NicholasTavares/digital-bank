@@ -31,4 +31,8 @@ export class UsersService {
 
     return user;
   }
+
+  async softRemoveUser(id: string) {
+    await this.userRepository.softRemoveUser(id);
+  }
 }
