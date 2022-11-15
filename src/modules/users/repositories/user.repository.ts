@@ -52,4 +52,8 @@ export class UserRepository extends Repository<User> {
 
     return user;
   }
+
+  async softRemoveUser(id: string) {
+    await this.softRemove({ id });
+  }
 }
