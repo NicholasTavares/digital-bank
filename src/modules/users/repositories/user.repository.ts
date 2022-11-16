@@ -1,5 +1,10 @@
 import { DataSource, Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
@@ -41,7 +46,16 @@ export class UserRepository extends Repository<User> {
       },
     });
 
-    await this.save(user);
+    try {
+      await this.save(user);
+    } catch (error) {
+      if (error.code === '23505') {
+        // duplicate username
+        throw new ConflictException('Username already exists');
+      }
+
+      throw new InternalServerErrorException();
+    }
 
     return user;
   }
