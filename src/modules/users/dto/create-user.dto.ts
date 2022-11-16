@@ -6,7 +6,7 @@ import { Match } from 'src/utils/MathDecorator.util';
 export class CreateUserDTO {
   @IsNotEmpty()
   @IsString()
-  @MinLength(4, { message: 'Nome deve ter no mínimo 4 caracteres.' })
+  @MinLength(3, { message: 'Nome deve ter no mínimo 3 caracteres.' })
   readonly username: string;
 
   @IsNotEmpty()
