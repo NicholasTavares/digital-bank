@@ -1,10 +1,12 @@
 import { hashSync } from 'bcrypt';
+import { Account } from 'src/modules/accounts/entities/account.entity';
 import {
   BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -16,6 +18,11 @@ export class User {
 
   @Column()
   username: string;
+
+  @OneToOne(() => Account, (account) => account.user, {
+    cascade: true,
+  })
+  account: Account;
 
   @Column({ select: false })
   password: string;
