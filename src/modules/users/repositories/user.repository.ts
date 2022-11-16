@@ -23,7 +23,7 @@ export class UserRepository extends Repository<User> {
     return users;
   }
 
-  async findUser(id: any): Promise<User> {
+  async findUser(id: string): Promise<User> {
     const user = await this.findOne({
       where: {
         id,
