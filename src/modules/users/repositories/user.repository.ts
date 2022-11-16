@@ -4,6 +4,8 @@ import { User } from '../entities/user.entity';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
 
+const INITIAL_BALANCE = 100.0;
+
 @Injectable()
 export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
@@ -21,6 +23,7 @@ export class UserRepository extends Repository<User> {
       where: {
         id,
       },
+      relations: ['account'],
     });
 
     if (!user) {
@@ -31,7 +34,12 @@ export class UserRepository extends Repository<User> {
   }
 
   async createUser(createUserDTO: CreateUserDTO): Promise<User> {
-    const user = this.create(createUserDTO);
+    const user = this.create({
+      ...createUserDTO,
+      account: {
+        balance: INITIAL_BALANCE,
+      },
+    });
 
     await this.save(user);
 
@@ -54,6 +62,7 @@ export class UserRepository extends Repository<User> {
   }
 
   async softRemoveUser(id: string) {
-    await this.softRemove({ id });
+    const user = await this.findUser(id);
+    await this.softRemove(user);
   }
 }
