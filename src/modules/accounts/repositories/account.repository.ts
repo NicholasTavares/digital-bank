@@ -21,4 +21,19 @@ export class AccountRepository extends Repository<Account> {
 
     return account;
   }
+
+  async updateAccountBalance(id: string, balance: number): Promise<Account> {
+    const account = await this.preload({
+      id,
+      balance,
+    });
+
+    if (!account) {
+      throw new NotFoundException(`Account not found`);
+    }
+
+    await this.save(account);
+
+    return account;
+  }
 }
