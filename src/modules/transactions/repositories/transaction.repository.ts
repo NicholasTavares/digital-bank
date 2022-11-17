@@ -9,10 +9,13 @@ export class TransactionRepository extends Repository<Transaction> {
     super(Transaction, dataSource.createEntityManager());
   }
 
-  async findTransactionByUser(user_id: string): Promise<Transaction[]> {
-    const transaction = await this.find({
-      // TODO: fazer um query builder para mostrar apenas as informações necessárias
-      where: [
+  async findTransactionByLoggedUser(user_id: string): Promise<Transaction[]> {
+    const transactions = await this.createQueryBuilder('transaction')
+      .innerJoin('transaction.debitedAccount', 'debitedAccount')
+      .innerJoin('transaction.creditedAccount', 'creditedAccount')
+      .innerJoin('debitedAccount.user', 'debitedAccountUser')
+      .innerJoin('creditedAccount.user', 'creditedAccountUser')
+      .where([
         {
           creditedAccount: {
             user_id,
@@ -23,10 +26,15 @@ export class TransactionRepository extends Repository<Transaction> {
             user_id,
           },
         },
-      ],
-      relations: ['debitedAccount', 'creditedAccount'],
-    });
-    return transaction;
+      ])
+      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .addSelect([
+        'debitedAccountUser.username',
+        'creditedAccountUser.username',
+      ])
+      .getRawMany();
+
+    return transactions;
   }
 
   async createTransaction(
