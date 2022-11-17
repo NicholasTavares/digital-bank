@@ -9,7 +9,7 @@ export class TransactionRepository extends Repository<Transaction> {
     super(Transaction, dataSource.createEntityManager());
   }
 
-  async findTransactionByLoggedUser(user_id: string): Promise<Transaction[]> {
+  async findTransactionsByLoggedUser(user_id: string): Promise<Transaction[]> {
     const transactions = await this.createQueryBuilder('transaction')
       .innerJoin('transaction.debitedAccount', 'debitedAccount')
       .innerJoin('transaction.creditedAccount', 'creditedAccount')
@@ -27,6 +27,29 @@ export class TransactionRepository extends Repository<Transaction> {
           },
         },
       ])
+      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .addSelect([
+        'debitedAccountUser.username',
+        'creditedAccountUser.username',
+      ])
+      .getRawMany();
+
+    return transactions;
+  }
+
+  async findDebitedTransactionsByLoggedUser(
+    user_id: string,
+  ): Promise<Transaction[]> {
+    const transactions = await this.createQueryBuilder('transaction')
+      .innerJoin('transaction.debitedAccount', 'debitedAccount')
+      .innerJoin('transaction.creditedAccount', 'creditedAccount')
+      .innerJoin('debitedAccount.user', 'debitedAccountUser')
+      .innerJoin('creditedAccount.user', 'creditedAccountUser')
+      .where({
+        debitedAccount: {
+          user_id,
+        },
+      })
       .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
       .addSelect([
         'debitedAccountUser.username',
