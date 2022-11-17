@@ -60,6 +60,29 @@ export class TransactionRepository extends Repository<Transaction> {
     return transactions;
   }
 
+  async findCreditedTransactionsByLoggedUser(
+    user_id: string,
+  ): Promise<Transaction[]> {
+    const transactions = await this.createQueryBuilder('transaction')
+      .innerJoin('transaction.debitedAccount', 'debitedAccount')
+      .innerJoin('transaction.creditedAccount', 'creditedAccount')
+      .innerJoin('debitedAccount.user', 'debitedAccountUser')
+      .innerJoin('creditedAccount.user', 'creditedAccountUser')
+      .where({
+        creditedAccount: {
+          user_id,
+        },
+      })
+      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .addSelect([
+        'debitedAccountUser.username',
+        'creditedAccountUser.username',
+      ])
+      .getRawMany();
+
+    return transactions;
+  }
+
   async createTransaction(
     accountToBeDebitedBalance: number,
     accountToBeCretitedBalance: number,
