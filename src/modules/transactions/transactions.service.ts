@@ -29,6 +29,17 @@ export class TransactionsService {
     return transactions;
   }
 
+  async findCreditedTransactionsByLoggedUser(
+    user_id: string,
+  ): Promise<Transaction[]> {
+    const transactions =
+      await this.transactionRepository.findCreditedTransactionsByLoggedUser(
+        user_id,
+      );
+
+    return transactions;
+  }
+
   async createTransaction(
     { credited_user_id, value }: CreateTransactionDTO,
     user_id: string,
