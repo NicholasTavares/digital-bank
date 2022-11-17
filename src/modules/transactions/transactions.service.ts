@@ -10,6 +10,15 @@ export class TransactionsService {
     private readonly transactionRepository: TransactionRepository,
     private readonly accountsService: AccountsService,
   ) {}
+
+  async findTransactionByUser(user_id: string): Promise<Transaction[]> {
+    const transaction = await this.transactionRepository.findTransactionByUser(
+      user_id,
+    );
+
+    return transaction;
+  }
+
   async createTransaction(
     { credited_user_id, value }: CreateTransactionDTO,
     user_id: string,
