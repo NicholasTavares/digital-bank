@@ -9,6 +9,26 @@ export class TransactionRepository extends Repository<Transaction> {
     super(Transaction, dataSource.createEntityManager());
   }
 
+  async findTransactionByUser(user_id: string): Promise<Transaction[]> {
+    const transaction = await this.find({
+      // TODO: fazer um query builder para mostrar apenas as informações necessárias
+      where: [
+        {
+          creditedAccount: {
+            user_id,
+          },
+        },
+        {
+          debitedAccount: {
+            user_id,
+          },
+        },
+      ],
+      relations: ['debitedAccount', 'creditedAccount'],
+    });
+    return transaction;
+  }
+
   async createTransaction(
     accountToBeDebitedBalance: number,
     accountToBeCretitedBalance: number,
