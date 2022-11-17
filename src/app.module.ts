@@ -5,6 +5,7 @@ import dbConfiguration from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
     UsersModule,
     AccountsModule,
     TransactionsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
