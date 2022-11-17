@@ -11,11 +11,22 @@ export class TransactionsService {
     private readonly accountsService: AccountsService,
   ) {}
 
-  async findTransactionByLoggedUser(user_id: string): Promise<Transaction[]> {
-    const transaction =
-      await this.transactionRepository.findTransactionByLoggedUser(user_id);
+  async findTransactionsByLoggedUser(user_id: string): Promise<Transaction[]> {
+    const transactions =
+      await this.transactionRepository.findTransactionsByLoggedUser(user_id);
 
-    return transaction;
+    return transactions;
+  }
+
+  async findDebitedTransactionsByLoggedUser(
+    user_id: string,
+  ): Promise<Transaction[]> {
+    const transactions =
+      await this.transactionRepository.findDebitedTransactionsByLoggedUser(
+        user_id,
+      );
+
+    return transactions;
   }
 
   async createTransaction(
