@@ -4,6 +4,7 @@ import { UsersModule } from './modules/users/users.module';
 import dbConfiguration from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsModule } from './modules/accounts/accounts.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
     }),
     UsersModule,
     AccountsModule,
+    TransactionsModule,
   ],
   controllers: [],
   providers: [],
