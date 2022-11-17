@@ -1,14 +1,16 @@
-import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('accounts')
 export class Account {
@@ -26,6 +28,24 @@ export class Account {
   })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(
+    () => Transaction,
+    (debitedTransactions) => debitedTransactions.debitedAccount,
+    {
+      cascade: true,
+    },
+  )
+  debitedTransactions: Transaction[];
+
+  @OneToMany(
+    () => Transaction,
+    (creditedTransactions) => creditedTransactions.creditedAccount,
+    {
+      cascade: true,
+    },
+  )
+  creditedTransactions: Transaction[];
 
   @CreateDateColumn()
   created_at: Date;
