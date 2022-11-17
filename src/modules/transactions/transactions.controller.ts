@@ -29,6 +29,14 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('/credited')
+  findCredited(@Request() req: any) {
+    return this.transactionsService.findCreditedTransactionsByLoggedUser(
+      req.user.id,
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(
     @Body() createTransactionDTO: CreateTransactionDTO,
