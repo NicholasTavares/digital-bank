@@ -62,7 +62,7 @@ export class TransactionRepository extends Repository<Transaction> {
 
       transaction = queryRunner.manager.create(Transaction, {
         debitedAccount: {
-          id: 'df3e2793-4e3d-4777-8cd7-892b8a0c6906',
+          id: accountToBeDebitedId,
         },
         creditedAccount: {
           id: accountToBeCretitedId,
