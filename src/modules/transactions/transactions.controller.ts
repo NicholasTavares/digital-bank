@@ -15,9 +15,17 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('/user')
-  findOne(@Request() req: any) {
-    return this.transactionsService.findTransactionByLoggedUser(req.user.id);
+  @Get('/')
+  find(@Request() req: any) {
+    return this.transactionsService.findTransactionsByLoggedUser(req.user.id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/debited')
+  findDebited(@Request() req: any) {
+    return this.transactionsService.findDebitedTransactionsByLoggedUser(
+      req.user.id,
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
