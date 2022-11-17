@@ -17,7 +17,7 @@ export class TransactionsController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/user')
   findOne(@Request() req: any) {
-    return this.transactionsService.findTransactionByUser(req.user.id);
+    return this.transactionsService.findTransactionByLoggedUser(req.user.id);
   }
 
   @UseGuards(AuthGuard('jwt'))

@@ -11,10 +11,9 @@ export class TransactionsService {
     private readonly accountsService: AccountsService,
   ) {}
 
-  async findTransactionByUser(user_id: string): Promise<Transaction[]> {
-    const transaction = await this.transactionRepository.findTransactionByUser(
-      user_id,
-    );
+  async findTransactionByLoggedUser(user_id: string): Promise<Transaction[]> {
+    const transaction =
+      await this.transactionRepository.findTransactionByLoggedUser(user_id);
 
     return transaction;
   }
