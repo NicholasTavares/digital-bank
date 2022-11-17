@@ -2,8 +2,7 @@ import { HttpException } from '@nestjs/common';
 
 export function ToNumber(value: any): number {
   if (typeof value === 'string') {
-    const number = parseFloat(value);
-    console.log('FLOAT', number);
+    const number = Number(value);
     return number;
   }
 
