@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -15,14 +17,15 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Get()
+  @Get('/all')
   findAll() {
     return this.userService.findAllUsers();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findUser(id);
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  findOne(@Request() req: any) {
+    return this.userService.findUser(req.user.id);
   }
 
   @Post()
@@ -30,13 +33,15 @@ export class UsersController {
     return this.userService.createUser(createUserDTO);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDTO: UpdateUserDTO) {
-    return this.userService.updateUser(id, updateUserDTO);
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
+  update(@Body() updateUserDTO: UpdateUserDTO, @Request() req: any) {
+    return this.userService.updateUser(req.user.id, updateUserDTO);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.softRemoveUser(id);
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  remove(@Request() req: any) {
+    return this.userService.softRemoveUser(req.user.id);
   }
 }
