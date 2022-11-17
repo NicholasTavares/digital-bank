@@ -2,7 +2,6 @@ import { Account } from 'src/modules/accounts/entities/account.entity';
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -37,7 +36,4 @@ export class Transaction {
 
   @CreateDateColumn()
   created_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
 }
