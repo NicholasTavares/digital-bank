@@ -10,29 +10,29 @@ export class TransactionsService {
     private readonly transactionRepository: TransactionRepository,
     private readonly accountsService: AccountsService,
   ) {}
-  async createTransaction({
-    user_id,
-    value,
-  }: CreateTransactionDTO): Promise<Transaction> {
+  async createTransaction(
+    { credited_user_id, value }: CreateTransactionDTO,
+    user_id: string,
+  ): Promise<Transaction> {
     if (value <= 0) {
       throw new BadRequestException('Valor inválido');
     }
 
     const accountToBeDebited = await this.accountsService.findAccountByUser(
-      '8b8af22a-ea63-40da-8ba6-af2ac7d887c9',
+      user_id,
     );
 
-    const accountToBeDebitedBalance = accountToBeDebited.balance * 1.0;
+    const accountToBeDebitedBalance = Number(accountToBeDebited.balance);
 
     if (accountToBeDebitedBalance < value) {
       throw new BadRequestException('Saldo insuficiente.');
     }
 
     const accountToBeCretited = await this.accountsService.findAccountByUser(
-      user_id,
+      credited_user_id,
     );
 
-    const accountToBeCretitedBalance = accountToBeCretited.balance * 1.0;
+    const accountToBeCretitedBalance = Number(accountToBeCretited.balance);
 
     if (accountToBeDebited.id === accountToBeCretited.id) {
       throw new BadRequestException('Conta de destino inválida.');
