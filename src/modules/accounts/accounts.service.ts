@@ -7,8 +7,20 @@ export class AccountsService {
   constructor(private readonly accountRepository: AccountRepository) {}
 
   async findAccountByUser(user_id: string): Promise<Account> {
-    const user = await this.accountRepository.findAccountByUser(user_id);
+    const account = await this.accountRepository.findAccountByUser(user_id);
 
-    return user;
+    return account;
+  }
+
+  async updateAccountBalance(
+    account_id: string,
+    balance: number,
+  ): Promise<Account> {
+    const account = await this.accountRepository.updateAccountBalance(
+      account_id,
+      balance,
+    );
+
+    return account;
   }
 }
