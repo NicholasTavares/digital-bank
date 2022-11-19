@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
+    // TODO: migrations
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfiguration],
