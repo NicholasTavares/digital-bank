@@ -9,7 +9,7 @@ import { User } from '../entities/user.entity';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
 
-const INITIAL_BALANCE = 100.0;
+const INITIAL_BALANCE_IN_CENTS = 100000; // 100 reais
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -42,7 +42,7 @@ export class UserRepository extends Repository<User> {
     const user = this.create({
       ...createUserDTO,
       account: {
-        balance: INITIAL_BALANCE,
+        balance: INITIAL_BALANCE_IN_CENTS,
       },
     });
 

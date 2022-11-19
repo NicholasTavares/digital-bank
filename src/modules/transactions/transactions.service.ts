@@ -44,7 +44,10 @@ export class TransactionsService {
     { credited_user_id, value }: CreateTransactionDTO,
     user_id: string,
   ): Promise<Transaction> {
-    if (value <= 0) {
+    const roundedValue = value.toFixed(2);
+    const convertedValueToCents = Number(roundedValue) * 100;
+
+    if (convertedValueToCents <= 0 ) {
       throw new BadRequestException('Valor inválido');
     }
 
@@ -54,7 +57,7 @@ export class TransactionsService {
 
     const accountToBeDebitedBalance = Number(accountToBeDebited.balance);
 
-    if (accountToBeDebitedBalance < value) {
+    if (accountToBeDebitedBalance < convertedValueToCents) {
       throw new BadRequestException('Saldo insuficiente.');
     }
 
@@ -73,7 +76,7 @@ export class TransactionsService {
       accountToBeCretitedBalance,
       accountToBeDebited.id,
       accountToBeCretited.id,
-      value,
+      convertedValueToCents,
     );
 
     return transaction;
