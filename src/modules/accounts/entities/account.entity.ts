@@ -17,7 +17,7 @@ export class Account {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'integer' })
   balance: number;
 
   @Column({ name: 'user_id' })
