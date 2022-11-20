@@ -44,10 +44,7 @@ export class TransactionsService {
     { credited_user_id, value }: CreateTransactionDTO,
     user_id: string,
   ): Promise<Transaction> {
-    console.log(value * 100);
     const roundedAndConvertedValueToCents = Math.round(value * 100);
-
-    console.log('convertedValueToCents', roundedAndConvertedValueToCents);
 
     if (roundedAndConvertedValueToCents <= 0) {
       throw new BadRequestException('Valor inválido');
