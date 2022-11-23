@@ -32,6 +32,7 @@ export class TransactionRepository extends Repository<Transaction> {
         'debitedAccountUser.username',
         'creditedAccountUser.username',
       ])
+      .orderBy('transaction.created_at', 'DESC')
       .getRawMany();
 
     return transactions;
