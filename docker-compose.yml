@@ -1,39 +1,27 @@
-version: '3.5'
-
-networks:
-  app-ngcash:
-    driver: bridge
-
-volumes:
-  postgres:
+version: '3.9'
 
 services:
-  api:
-    build: .
-    restart: always
-    container_name: api_ngcash
-    networks:
-      - app-ngcash
-    depends_on:
-      - postgres
-    ports:
-      - 3000:3000
-    volumes:
-      - ./src:/usr/ngcash/src
-      - ./.env:/usr/ngcash/.env
-    command: yarn start:dev
+  # api:
+  #   build: .
+  #   restart: always
+  #   container_name: api-ngcash
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./src:/usr/ngcash/src
+  #     - ./.env:/usr/ngcash/.env
+  #   command: yarn start:dev
 
-  postgres:
-    container_name: postgres_container
+  db:
+    container_name: db-ngcash
     image: postgres
-    networks:
-      - app-ngcash
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: westeros
-      PGDATA: /data/postgres
+      POSTGRES_PASSWORD: ngcash
     volumes:
-      - postgres:/data/postgres
+      - .:/ngcash/datadir
     ports:
-      - '5432:5432'
+      - '5433:5432'
     restart: always
