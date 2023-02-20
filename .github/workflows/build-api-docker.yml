@@ -1,4 +1,4 @@
-name: 01 Basic Docker Build
+name: Docker Build API Digital Bank
 
 on:
   push:
