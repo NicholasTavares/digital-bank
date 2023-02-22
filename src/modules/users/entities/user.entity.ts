@@ -31,7 +31,7 @@ export class User {
   password: string;
 
   @Column({ type: 'timestamp' })
-  date_birth: Date;
+  birth_date: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
