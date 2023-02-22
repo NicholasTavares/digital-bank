@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import {
   ConflictException,
   Injectable,
@@ -17,10 +17,36 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.find();
+  async findAll(text: string): Promise<User[]> {
+    const users = await this.createQueryBuilder('users')
+      .where([
+        {
+          username: ILike(`%${text}%`),
+        },
+        {
+          email: ILike(`${text}`),
+        },
+      ])
+      .getMany();
 
     return users;
+  }
+
+  async findMe(user_id: string): Promise<User> {
+    const user = await this.createQueryBuilder('user')
+      .innerJoin('user.account', 'account')
+      .where('user.id = :user_id', { user_id })
+      .select([
+        'user.id',
+        'user.username as username',
+        'user.birth_date as birth_date',
+        'user.email as email',
+        'user.created_at as created_at',
+      ])
+      .addSelect(['account.id', 'account.balance'])
+      .getRawOne();
+
+    return user;
   }
 
   async findUser(id: string): Promise<User> {
@@ -28,7 +54,7 @@ export class UserRepository extends Repository<User> {
       where: {
         id,
       },
-      relations: ['account'],
+      select: ['id', 'username', 'email'],
     });
 
     if (!user) {
