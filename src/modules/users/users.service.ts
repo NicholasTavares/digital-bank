@@ -8,40 +8,40 @@ import { UserRepository } from './repositories/user.repository';
 export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findAllUsers(): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     const users = await this.userRepository.findAll();
 
     return users;
   }
 
-  async findUser(id: string): Promise<User> {
+  async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findUser(id);
 
     return user;
   }
 
-  async findUserByUsernameForAuth(username: string): Promise<User> {
+  async findUserByEmailForAuth(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { username },
-      select: ['password', 'id', 'username'],
+      where: { email },
+      select: ['password', 'id', 'email', 'username'],
     });
 
     return user;
   }
 
-  async createUser(createUserDTO: CreateUserDTO): Promise<User> {
+  async create(createUserDTO: CreateUserDTO): Promise<User> {
     const user = await this.userRepository.createUser(createUserDTO);
 
     return user;
   }
 
-  async updateUser(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
+  async update(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.updateUser(id, updateUserDTO);
 
     return user;
   }
 
-  async softRemoveUser(id: string) {
+  async remove(id: string) {
     await this.userRepository.softRemoveUser(id);
   }
 }

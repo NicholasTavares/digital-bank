@@ -19,29 +19,29 @@ export class UsersController {
 
   @Get('/all')
   findAll() {
-    return this.userService.findAllUsers();
+    return this.userService.findAll();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
   findOne(@Request() req: any) {
-    return this.userService.findUser(req.user.id);
+    return this.userService.findOne(req.user.id);
   }
 
   @Post()
   create(@Body() createUserDTO: CreateUserDTO) {
-    return this.userService.createUser(createUserDTO);
+    return this.userService.create(createUserDTO);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch()
   update(@Body() updateUserDTO: UpdateUserDTO, @Request() req: any) {
-    return this.userService.updateUser(req.user.id, updateUserDTO);
+    return this.userService.update(req.user.id, updateUserDTO);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   remove(@Request() req: any) {
-    return this.userService.softRemoveUser(req.user.id);
+    return this.userService.remove(req.user.id);
   }
 }
