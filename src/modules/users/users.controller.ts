@@ -3,8 +3,10 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -12,20 +14,26 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { PaginationUsersDTO } from './dto/pagination-users.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get('/all')
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: PaginationUsersDTO) {
+    return this.userService.findAll(query);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get()
-  findOne(@Request() req: any) {
-    return this.userService.findOne(req.user.id);
+  @Get('/me')
+  findMe(@Request() req: any) {
+    return this.userService.findMe(req.user.id);
+  }
+
+  @Get(':user_id')
+  findOne(@Param('user_id') user_id: string) {
+    return this.userService.findOne(user_id);
   }
 
   @Post()
