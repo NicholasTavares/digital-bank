@@ -12,17 +12,22 @@ export class AuthService {
   ) {}
 
   async login(user) {
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: user.id, email: user.email };
 
     return {
       token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      },
     };
   }
 
-  async validateUser(username: string, password: string) {
+  async validateUser(email: string, password: string) {
     let user: User;
     try {
-      user = await this.userService.findUserByUsernameForAuth(username);
+      user = await this.userService.findUserByEmailForAuth(email);
     } catch (error) {
       return null;
     }

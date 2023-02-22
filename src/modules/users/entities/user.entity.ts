@@ -16,8 +16,11 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   username: string;
+
+  @Column({ unique: true })
+  email: string;
 
   @OneToOne(() => Account, (account) => account.user, {
     cascade: true,
@@ -27,13 +30,16 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp' })
+  date_birth: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamp' })
   deleted_at: Date;
 
   @BeforeInsert()
