@@ -9,9 +9,8 @@ import { SavingsModule } from './modules/savings/savings.module';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import dbConfiguration from './config/db.config';
-import { SendMailProducerService } from './modules/jobs/send-mail-producer.service';
-import { SendMailConsumerService } from './modules/jobs/send-mail-consumer.service';
 import { JobsModule } from './modules/jobs/jobs.module';
+import { TokensModule } from './modules/tokens/tokens.module';
 
 @Module({
   imports: [
@@ -48,6 +47,7 @@ import { JobsModule } from './modules/jobs/jobs.module';
     AuthModule,
     SavingsModule,
     JobsModule,
+    TokensModule,
   ],
   controllers: [],
   providers: [],
