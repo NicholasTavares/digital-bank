@@ -97,9 +97,6 @@ export class TransactionRepository extends Repository<Transaction> {
 
     let transaction: Transaction;
 
-    // using queryRunner.manager entityManager because of typeorm transaction limitation
-    // is not possible to use transaction with custom repositories and services from others modules
-
     try {
       const accountToBeDebitedNewBalance = accountToBeDebitedBalance - value;
       const accountToBeDebited = await queryRunner.manager.preload(Account, {

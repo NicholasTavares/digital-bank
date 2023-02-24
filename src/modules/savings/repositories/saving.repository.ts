@@ -59,7 +59,6 @@ export class SavingRepository extends Repository<Saving> {
       await queryRunner.manager.save([accountToBeDebited, deposit]);
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log('ERROR', err);
       await queryRunner.rollbackTransaction();
       throw new BadRequestException('Erro ao concluir deposito!');
     } finally {
@@ -98,7 +97,6 @@ export class SavingRepository extends Repository<Saving> {
       await queryRunner.manager.save([savingToBeDebited, withdraw]);
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log('ERROR', err);
       await queryRunner.rollbackTransaction();
       throw new BadRequestException('Erro ao concluir deposito!');
     } finally {
