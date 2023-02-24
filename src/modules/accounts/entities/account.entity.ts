@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { User } from 'src/modules/users/entities/user.entity';
+import { Saving } from 'src/modules/savings/entities/saving.entity';
 
 @Entity('accounts')
 export class Account {
@@ -46,6 +47,11 @@ export class Account {
     },
   )
   creditedTransactions: Transaction[];
+
+  @OneToOne(() => Saving, (saving) => saving.account, {
+    cascade: true,
+  })
+  saving: Saving;
 
   @CreateDateColumn()
   created_at: Date;

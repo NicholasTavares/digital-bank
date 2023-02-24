@@ -6,6 +6,12 @@ import { AccountRepository } from './repositories/account.repository';
 export class AccountsService {
   constructor(private readonly accountRepository: AccountRepository) {}
 
+  async findOne(account_id: string): Promise<Account> {
+    const account = await this.accountRepository.findAccount(account_id);
+
+    return account;
+  }
+
   async findAccountByUser(user_id: string): Promise<Account> {
     const account = await this.accountRepository.findAccountByUser(user_id);
 
