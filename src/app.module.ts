@@ -7,9 +7,16 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SavingsModule } from './modules/savings/savings.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6380,
+      },
+    }),
     // TODO: migrations
     ConfigModule.forRoot({
       isGlobal: true,
