@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
-import dbConfiguration from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
@@ -9,9 +8,19 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SavingsModule } from './modules/savings/savings.module';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
+import dbConfiguration from './config/db.config';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6380,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'send-mail-verification-queue',
+    }),
     MailerModule.forRoot({
       transport: {
         host: process.env.SMTP_HOST,
@@ -20,12 +29,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
           user: process.env.SMTP_USERNAME,
           pass: process.env.SMTP_PASSWORD,
         },
-      },
-    }),
-    BullModule.forRoot({
-      redis: {
-        host: 'localhost',
-        port: 6380,
       },
     }),
     // TODO: migrations
