@@ -4,7 +4,7 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { PaginationUsersDTO } from './dto/pagination-users.dto';
-import { SendMailProducerService } from 'src/jobs/send-mail-producer.service';
+import { SendMailProducerService } from 'src/modules/jobs/send-mail-producer.service';
 
 @Injectable()
 export class UsersService {

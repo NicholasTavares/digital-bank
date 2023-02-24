@@ -5,11 +5,11 @@ import { Queue } from 'bull';
 @Injectable()
 export class SendMailProducerService {
   constructor(
-    @InjectQueue('send-email-verification-queue') private readonly queue: Queue,
+    @InjectQueue('send-mail-verification-queue') private readonly queue: Queue,
   ) {}
 
   async sendMail(username: string, email: string) {
-    await this.queue.add('send-email-verification-job', {
+    await this.queue.add('send-mail-verification-job', {
       username,
       email,
     });

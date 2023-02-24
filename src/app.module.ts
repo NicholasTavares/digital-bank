@@ -9,8 +9,9 @@ import { SavingsModule } from './modules/savings/savings.module';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import dbConfiguration from './config/db.config';
-import { SendMailProducerService } from './jobs/send-mail-producer.service';
-import { SendMailConsumerService } from './jobs/send-mail-consumer.service';
+import { SendMailProducerService } from './modules/jobs/send-mail-producer.service';
+import { SendMailConsumerService } from './modules/jobs/send-mail-consumer.service';
+import { JobsModule } from './modules/jobs/jobs.module';
 
 @Module({
   imports: [
@@ -19,9 +20,6 @@ import { SendMailConsumerService } from './jobs/send-mail-consumer.service';
         host: 'localhost',
         port: 6380,
       },
-    }),
-    BullModule.registerQueue({
-      name: 'send-mail-verification-queue',
     }),
     MailerModule.forRoot({
       transport: {
@@ -49,8 +47,9 @@ import { SendMailConsumerService } from './jobs/send-mail-consumer.service';
     TransactionsModule,
     AuthModule,
     SavingsModule,
+    JobsModule,
   ],
   controllers: [],
-  providers: [SendMailProducerService, SendMailConsumerService],
+  providers: [],
 })
 export class AppModule {}
