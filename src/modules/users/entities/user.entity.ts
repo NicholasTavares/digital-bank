@@ -22,16 +22,19 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @OneToOne(() => Account, (account) => account.user, {
-    cascade: true,
-  })
-  account: Account;
+  @Column({ default: null })
+  verified_at: Date | null;
 
   @Column({ select: false })
   password: string;
 
   @Column({ type: 'timestamp' })
   birth_date: Date;
+
+  @OneToOne(() => Account, (account) => account.user, {
+    cascade: true,
+  })
+  account: Account;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
