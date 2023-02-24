@@ -8,6 +8,20 @@ export class AccountRepository extends Repository<Account> {
     super(Account, dataSource.createEntityManager());
   }
 
+  async findAccount(account_id: string): Promise<Account> {
+    const account = await this.findOne({
+      where: {
+        id: account_id,
+      },
+    });
+
+    if (!account) {
+      throw new NotFoundException(`Account not found`);
+    }
+
+    return account;
+  }
+
   async findAccountByUser(user_id: string): Promise<Account> {
     const account = await this.findOne({
       where: {
