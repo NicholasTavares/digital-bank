@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { compareSync } from 'bcrypt';
@@ -12,7 +12,12 @@ export class AuthService {
   ) {}
 
   async login(user) {
-    const payload = { sub: user.id, email: user.email };
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      username: user.username,
+      account_id: user.account_id,
+    };
 
     return {
       token: this.jwtService.sign(payload),
@@ -32,8 +37,12 @@ export class AuthService {
       return null;
     }
 
+    if (!user) throw new UnauthorizedException('Email e/ou senha inválidos');
+
     const isPasswordValid = compareSync(password, user.password);
-    if (!isPasswordValid) return null;
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email e/ou senha inválidos');
+    }
 
     return user;
   }

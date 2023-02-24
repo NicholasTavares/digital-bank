@@ -28,10 +28,7 @@ export class UsersService {
   }
 
   async findUserByEmailForAuth(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { email },
-      select: ['password', 'id', 'email', 'username'],
-    });
+    const user = await this.userRepository.findUserByEmailForAuth(email);
 
     return user;
   }

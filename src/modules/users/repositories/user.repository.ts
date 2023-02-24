@@ -10,6 +10,7 @@ import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
 
 const INITIAL_BALANCE_IN_CENTS = 10000; // 100 reais
+const INITIAL_SAVING_BALANCE_IN_CENTS = 1000; // 10 reais
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -49,13 +50,33 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async findUser(id: string): Promise<User> {
+  async findUser(user_id: string): Promise<User> {
     const user = await this.findOne({
       where: {
-        id,
+        id: user_id,
       },
       select: ['id', 'username', 'email'],
     });
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    return user;
+  }
+
+  async findUserByEmailForAuth(email: string): Promise<User> {
+    const user = await this.createQueryBuilder('user')
+      .innerJoin('user.account', 'account')
+      .where('user.email = :email', { email })
+      .select([
+        'user.id as id',
+        'user.username as username',
+        'user.email as email',
+        'user.password as password',
+      ])
+      .addSelect(['account.id'])
+      .getRawOne();
 
     if (!user) {
       throw new NotFoundException(`User not found`);
@@ -69,6 +90,9 @@ export class UserRepository extends Repository<User> {
       ...createUserDTO,
       account: {
         balance: INITIAL_BALANCE_IN_CENTS,
+        saving: {
+          balance: INITIAL_SAVING_BALANCE_IN_CENTS,
+        },
       },
     });
 
