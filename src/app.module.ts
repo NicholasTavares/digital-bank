@@ -9,6 +9,8 @@ import { SavingsModule } from './modules/savings/savings.module';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import dbConfiguration from './config/db.config';
+import { SendMailProducerService } from './jobs/send-mail-producer.service';
+import { SendMailConsumerService } from './jobs/send-mail-consumer.service';
 
 @Module({
   imports: [
@@ -49,6 +51,6 @@ import dbConfiguration from './config/db.config';
     SavingsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [SendMailProducerService, SendMailConsumerService],
 })
 export class AppModule {}
