@@ -21,4 +21,18 @@ export class VerificationMailTokenRepository extends Repository<VerificationMail
 
     return token;
   }
+
+  async createToken(
+    user_id: string,
+    hash: string,
+  ): Promise<VerificationMailToken> {
+    const token = this.create({
+      user_id,
+      token: hash,
+    });
+
+    await this.save(token);
+
+    return token;
+  }
 }
