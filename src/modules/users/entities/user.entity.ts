@@ -1,11 +1,13 @@
 import { hashSync } from 'bcrypt';
 import { Account } from 'src/modules/accounts/entities/account.entity';
+import { VerificationMailToken } from 'src/modules/verification_mail_tokens/entities/verification_mail_token.entity';
 import {
   BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,16 +24,28 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @OneToOne(() => Account, (account) => account.user, {
-    cascade: true,
-  })
-  account: Account;
+  @Column({ default: null })
+  verified_at: Date | null;
 
   @Column({ select: false })
   password: string;
 
   @Column({ type: 'timestamp' })
   birth_date: Date;
+
+  @OneToOne(() => Account, (account) => account.user, {
+    cascade: true,
+  })
+  account: Account;
+
+  @OneToMany(
+    () => VerificationMailToken,
+    (verificationMailToken) => verificationMailToken.user,
+    {
+      cascade: true,
+    },
+  )
+  verificationMailToken: VerificationMailToken;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

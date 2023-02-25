@@ -1,15 +1,35 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
-import dbConfiguration from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SavingsModule } from './modules/savings/savings.module';
+import { BullModule } from '@nestjs/bull';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { JobsModule } from './modules/jobs/jobs.module';
+import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
+import dbConfiguration from './config/db.config';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6380,
+      },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.SMTP_HOST,
+        port: +process.env.SMTP_PORT,
+        auth: {
+          user: process.env.SMTP_USERNAME,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+    }),
     // TODO: migrations
     ConfigModule.forRoot({
       isGlobal: true,
@@ -26,6 +46,8 @@ import { SavingsModule } from './modules/savings/savings.module';
     TransactionsModule,
     AuthModule,
     SavingsModule,
+    JobsModule,
+    VerificationMailTokensModule,
   ],
   controllers: [],
   providers: [],

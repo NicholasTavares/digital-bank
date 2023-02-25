@@ -9,12 +9,14 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JobsModule } from '../jobs/jobs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
     PassportModule,
+    JobsModule,
     JwtModule.register({
       privateKey: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '24h' },

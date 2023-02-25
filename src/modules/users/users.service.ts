@@ -4,10 +4,14 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { PaginationUsersDTO } from './dto/pagination-users.dto';
+import { SendMailProducerService } from 'src/modules/jobs/send-mail-producer.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly sendMailProducerService: SendMailProducerService,
+  ) {}
 
   async findAll({ text }: PaginationUsersDTO): Promise<User[]> {
     const users = await this.userRepository.findAll(text);
@@ -48,11 +52,28 @@ export class UsersService {
 
     const user = await this.userRepository.createUser(createUserDTO);
 
+    await this.sendMailProducerService.sendMail(
+      user.id,
+      user.username,
+      user.email,
+    );
+
     return user;
   }
 
   async update(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.updateUser(id, updateUserDTO);
+
+    return user;
+  }
+
+  async updateVerifyUser(user_id: string, verified_at: Date): Promise<User> {
+    const user = await this.userRepository.preload({
+      id: user_id,
+      verified_at,
+    });
+
+    await this.userRepository.save(user);
 
     return user;
   }

@@ -14,6 +14,14 @@ services:
   #     - ./.env:/usr/ngcash/.env
   #   command: yarn start:dev
 
+  redis:
+    image: redis:7-bullseye
+    restart: always
+    ports:
+      - 6380:6379
+    volumes: 
+      - /redis_data:/data
+
   db:
     container_name: db-ngcash
     image: postgres
