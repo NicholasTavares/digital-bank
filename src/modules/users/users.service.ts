@@ -53,8 +53,9 @@ export class UsersService {
     const user = await this.userRepository.createUser(createUserDTO);
 
     await this.sendMailProducerService.sendMail(
-      createUserDTO.username,
-      createUserDTO.email,
+      user.id,
+      user.username,
+      user.email,
     );
 
     return user;

@@ -8,8 +8,9 @@ export class SendMailProducerService {
     @InjectQueue('send-mail-verification-queue') private readonly queue: Queue,
   ) {}
 
-  async sendMail(username: string, email: string) {
+  async sendMail(user_id: string, username: string, email: string) {
     await this.queue.add('send-mail-verification-job', {
+      user_id,
       username,
       email,
     });
