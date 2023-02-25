@@ -8,9 +8,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SavingsModule } from './modules/savings/savings.module';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
-import dbConfiguration from './config/db.config';
 import { JobsModule } from './modules/jobs/jobs.module';
-import { TokensModule } from './modules/tokens/tokens.module';
+import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
+import dbConfiguration from './config/db.config';
 
 @Module({
   imports: [
@@ -47,7 +47,7 @@ import { TokensModule } from './modules/tokens/tokens.module';
     AuthModule,
     SavingsModule,
     JobsModule,
-    TokensModule,
+    VerificationMailTokensModule,
   ],
   controllers: [],
   providers: [],
