@@ -25,7 +25,9 @@ export class SendMailConsumerService {
       to: email,
       from: 'Suport Digital Bank',
       subject: 'Email verification',
-      text: `Hello, ${username}! Welcome to the Digital Bank. Please verify your email by clicking on the following link: ${token.token}`,
+      text: `Hello, ${username}! Welcome to the Digital Bank.
+      Please verify your email by clicking on the following link: http://localhost:5001/mail-verification/${token.token}.
+      This token is valid for 1 day.`,
     });
   }
 }

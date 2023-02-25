@@ -35,4 +35,8 @@ export class VerificationMailTokenRepository extends Repository<VerificationMail
 
     return token;
   }
+
+  async deleteToken(hash_id: string) {
+    await this.delete(hash_id);
+  }
 }

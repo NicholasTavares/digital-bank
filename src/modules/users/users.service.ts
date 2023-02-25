@@ -67,6 +67,17 @@ export class UsersService {
     return user;
   }
 
+  async updateVerifyUser(user_id: string, verified_at: Date): Promise<User> {
+    const user = await this.userRepository.preload({
+      id: user_id,
+      verified_at,
+    });
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
   async remove(id: string) {
     await this.userRepository.softRemoveUser(id);
   }
