@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { VerificationMailToken } from './entities/verification_mail_token.entity';
 import { VerificationMailTokenRepository } from './repositories/verification_mail_tokens.repository';
 import { UsersService } from '../users/users.service';
@@ -8,6 +13,7 @@ import * as crypto from 'crypto';
 export class VerificationMailTokensService {
   constructor(
     private readonly verificationMailTokenRepository: VerificationMailTokenRepository,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 

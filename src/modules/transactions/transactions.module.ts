@@ -6,9 +6,10 @@ import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
 import { AccountsService } from '../accounts/accounts.service';
 import { AccountRepository } from '../accounts/repositories/account.repository';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction])],
+  imports: [TypeOrmModule.forFeature([Transaction]), UsersModule],
   providers: [
     TransactionsService,
     TransactionRepository,
