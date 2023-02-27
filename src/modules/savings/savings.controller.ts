@@ -40,6 +40,7 @@ export class SavingsController {
   ) {
     return this.savingsService.withdrawValue(
       transactionSavingValueDTO,
+      req.user.id,
       req.user.account_id,
     );
   }

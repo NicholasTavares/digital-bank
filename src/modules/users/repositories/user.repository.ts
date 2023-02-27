@@ -41,6 +41,7 @@ export class UserRepository extends Repository<User> {
         'user.id',
         'user.username as username',
         'user.birth_date as birth_date',
+        'user.verified_at as verified_at',
         'user.email as email',
         'user.created_at as created_at',
       ])
@@ -55,7 +56,7 @@ export class UserRepository extends Repository<User> {
       where: {
         id: user_id,
       },
-      select: ['id', 'username', 'email'],
+      select: ['id', 'username', 'email', 'verified_at'],
     });
 
     if (!user) {

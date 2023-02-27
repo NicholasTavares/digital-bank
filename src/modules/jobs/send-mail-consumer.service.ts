@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
 type JobEmailDataProps = {
   user_id: string;
@@ -13,6 +14,7 @@ type JobEmailDataProps = {
 export class SendMailConsumerService {
   constructor(
     private readonly mailService: MailerService,
+    @Inject(forwardRef(() => VerificationMailTokensService))
     private readonly verificationTokenService: VerificationMailTokensService,
   ) {}
   @Process('send-mail-verification-job')
