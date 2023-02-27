@@ -1,13 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AccountsService } from '../accounts/accounts.service';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionRepository } from './repositories/transaction.repository';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     private readonly transactionRepository: TransactionRepository,
+    private readonly usersService: UsersService,
     private readonly accountsService: AccountsService,
   ) {}
 
@@ -48,6 +54,14 @@ export class TransactionsService {
 
     if (roundedAndConvertedValueToCents <= 0) {
       throw new BadRequestException('Valor inválido');
+    }
+
+    const user = await this.usersService.findOne(user_id);
+
+    if (!user.verified_at) {
+      throw new UnauthorizedException(
+        'Conta não verificada. Verfique sua conta para sacar dinheiro da poupança ou transferir dinheiro para outras pessoas.',
+      );
     }
 
     const accountToBeDebited = await this.accountsService.findAccountByUser(
