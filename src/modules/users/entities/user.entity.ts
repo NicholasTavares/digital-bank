@@ -1,5 +1,6 @@
 import { hashSync } from 'bcrypt';
 import { Account } from 'src/modules/accounts/entities/account.entity';
+import { ResetPasswordToken } from 'src/modules/reset_password_token/entities/reset_password_token.entity';
 import { VerificationMailToken } from 'src/modules/verification_mail_tokens/entities/verification_mail_token.entity';
 import {
   BeforeInsert,
@@ -24,14 +25,17 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ default: null })
-  verified_at: Date | null;
-
   @Column({ select: false })
   password: string;
 
   @Column({ type: 'timestamp' })
   birth_date: Date;
+
+  @Column({ default: null })
+  verified_at: Date | null;
+
+  @Column({ default: null })
+  reseted_password_at: Date | null;
 
   @OneToOne(() => Account, (account) => account.user, {
     cascade: true,
@@ -46,6 +50,15 @@ export class User {
     },
   )
   verificationMailToken: VerificationMailToken;
+
+  @OneToMany(
+    () => ResetPasswordToken,
+    (resetPasswordToken) => resetPasswordToken.user,
+    {
+      cascade: true,
+    },
+  )
+  resetPasswordToken: ResetPasswordToken;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
