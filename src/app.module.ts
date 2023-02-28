@@ -10,6 +10,7 @@ import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
+import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
 import dbConfiguration from './config/db.config';
 
 @Module({
@@ -48,6 +49,7 @@ import dbConfiguration from './config/db.config';
     SavingsModule,
     JobsModule,
     VerificationMailTokensModule,
+    ResetPasswordTokenModule,
   ],
   controllers: [],
   providers: [],
