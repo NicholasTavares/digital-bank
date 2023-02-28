@@ -35,4 +35,8 @@ export class ResetPasswordTokenRepository extends Repository<ResetPasswordToken>
 
     return token;
   }
+
+  async deleteToken(hash_id: string) {
+    await this.delete(hash_id);
+  }
 }
