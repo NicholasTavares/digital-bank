@@ -16,7 +16,7 @@ USER node
 
 COPY --chown=user:node package.json yarn.lock ./
 
-RUN yarn install --immutable --immutable-cache --check-cache && yarn cache clean --mirror
+RUN yarn install --immutable --immutable-cache --check-cache && yarn build && yarn cache clean --mirror
 
 ADD . .
 
