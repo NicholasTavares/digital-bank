@@ -31,6 +31,14 @@ export class UsersService {
     return user;
   }
 
+  async findUserByEmailForResetPassword(email: string): Promise<User> {
+    const user = await this.userRepository.findUserByEmailForResetPassword(
+      email,
+    );
+
+    return user;
+  }
+
   async findUserByEmailForAuth(email: string): Promise<User> {
     const user = await this.userRepository.findUserByEmailForAuth(email);
 
