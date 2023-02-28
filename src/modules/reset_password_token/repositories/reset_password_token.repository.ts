@@ -21,4 +21,18 @@ export class ResetPasswordTokenRepository extends Repository<ResetPasswordToken>
 
     return token;
   }
+
+  async createToken(
+    user_id: string,
+    hash: string,
+  ): Promise<ResetPasswordToken> {
+    const token = this.create({
+      user_id,
+      token: hash,
+    });
+
+    await this.save(token);
+
+    return token;
+  }
 }
