@@ -27,10 +27,14 @@ export class TransactionRepository extends Repository<Transaction> {
           },
         },
       ])
-      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .select([
+        'transaction.id',
+        'transaction.value',
+        'transaction.created_at as created_at',
+      ])
       .addSelect([
-        'debitedAccountUser.username',
-        'creditedAccountUser.username',
+        'debitedAccountUser.username as debited_username',
+        'creditedAccountUser.username as credited_username',
       ])
       .orderBy('transaction.created_at', 'DESC')
       .getRawMany();
@@ -51,10 +55,14 @@ export class TransactionRepository extends Repository<Transaction> {
           user_id,
         },
       })
-      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .select([
+        'transaction.id',
+        'transaction.value',
+        'transaction.created_at as created_at',
+      ])
       .addSelect([
-        'debitedAccountUser.username',
-        'creditedAccountUser.username',
+        'debitedAccountUser.username as debited_username',
+        'creditedAccountUser.username as credited_username',
       ])
       .getRawMany();
 
@@ -74,10 +82,14 @@ export class TransactionRepository extends Repository<Transaction> {
           user_id,
         },
       })
-      .select(['transaction.id', 'transaction.value', 'transaction.created_at'])
+      .select([
+        'transaction.id',
+        'transaction.value',
+        'transaction.created_at as created_at',
+      ])
       .addSelect([
-        'debitedAccountUser.username',
-        'creditedAccountUser.username',
+        'debitedAccountUser.username as debited_username',
+        'creditedAccountUser.username as credited_username',
       ])
       .getRawMany();
 
