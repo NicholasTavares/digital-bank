@@ -25,10 +25,12 @@ export class ResetPasswordTokenRepository extends Repository<ResetPasswordToken>
   async createToken(
     user_id: string,
     hash: string,
+    expires_at: number,
   ): Promise<ResetPasswordToken> {
     const token = this.create({
       user_id,
       token: hash,
+      expires_at,
     });
 
     await this.save(token);
@@ -36,7 +38,7 @@ export class ResetPasswordTokenRepository extends Repository<ResetPasswordToken>
     return token;
   }
 
-  async deleteToken(hash_id: string) {
-    await this.delete(hash_id);
+  async deleteToken(token_id: string) {
+    await this.delete(token_id);
   }
 }
