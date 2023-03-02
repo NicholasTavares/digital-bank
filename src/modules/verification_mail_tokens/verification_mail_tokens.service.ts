@@ -42,8 +42,7 @@ export class VerificationMailTokensService {
       await this.verificationMailTokenRepository.deleteToken(
         verification_mail_token.id,
       );
-      // TODO: melhorar essa mensagem para mandar o usuario tentar novamente
-      throw new BadRequestException('Token expirado!');
+      throw new BadRequestException('Expired token!');
     }
 
     await this.usersService.updateVerifyUser(
