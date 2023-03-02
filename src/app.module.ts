@@ -11,14 +11,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
 import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
-import dbConfiguration from './config/db.config';
+import dbConfig from './config/db.config';
 
 @Module({
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
-        port: 6380,
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
       },
     }),
     MailerModule.forRoot({
@@ -34,7 +34,7 @@ import dbConfiguration from './config/db.config';
     // TODO: migrations
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [dbConfiguration],
+      load: [dbConfig],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
