@@ -5,12 +5,18 @@ import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { PaginationUsersDTO } from './dto/pagination-users.dto';
 import { SendMailProducerService } from 'src/modules/jobs/send-mail-producer.service';
+import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
+import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
+import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly sendMailProducerService: SendMailProducerService,
+    private readonly verificationMailTokensService: VerificationMailTokensService,
+    private readonly resetPasswordTokenService: ResetPasswordTokenService,
   ) {}
 
   async findAll({ text }: PaginationUsersDTO): Promise<User[]> {
@@ -27,6 +33,14 @@ export class UsersService {
 
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findUser(id);
+
+    return user;
+  }
+
+  async findUserByEmailForResetPassword(email: string): Promise<User> {
+    const user = await this.userRepository.findUserByEmailForResetPassword(
+      email,
+    );
 
     return user;
   }
@@ -52,11 +66,14 @@ export class UsersService {
 
     const user = await this.userRepository.createUser(createUserDTO);
 
-    await this.sendMailProducerService.sendMail(
-      user.id,
-      user.username,
-      user.email,
-    );
+    await this.sendMailProducerService.sendMailToken({
+      user_id: user.id,
+      email: user.email,
+      subject: 'Verify your email',
+      endpoint: 'users/verify-mail',
+      valid_time: '24 hours',
+      type: 'VERIFY_EMAIL',
+    });
 
     return user;
   }
@@ -67,15 +84,74 @@ export class UsersService {
     return user;
   }
 
-  async updateVerifyUser(user_id: string, verified_at: Date): Promise<User> {
+  async verifyMail(hash: string): Promise<User> {
+    const token = await this.verificationMailTokensService.findOne(hash);
+
+    const now = Date.now();
+
+    if (token.expires_at <= now) {
+      await this.verificationMailTokensService.delete(token.id);
+      throw new BadRequestException('Expired token!');
+    }
+
     const user = await this.userRepository.preload({
-      id: user_id,
-      verified_at,
+      id: token.user_id,
+      verified_at: new Date(),
     });
 
     await this.userRepository.save(user);
 
+    await this.verificationMailTokensService.delete(token.id);
+
     return user;
+  }
+
+  async resetPassword({ email }: CreateResetPasswordUserDTO) {
+    const user = await this.findUserByEmailForResetPassword(email);
+
+    if (!user) return;
+
+    return await this.sendMailProducerService.sendMailToken({
+      user_id: user.id,
+      email,
+      subject: 'Reset password',
+      endpoint: 'users/reset-password',
+      valid_time: '10 minutes',
+      type: 'PASSWORD',
+    });
+  }
+
+  async verifyResetPassword(hash: string, password: string) {
+    const token = await this.resetPasswordTokenService.findOne(hash);
+
+    const now = Date.now();
+
+    if (token.expires_at <= now) {
+      await this.resetPasswordTokenService.delete(token.id);
+      throw new BadRequestException('Expired token!');
+    }
+
+    const newPassword = await bcrypt.hash(password, 10);
+
+    const user = await this.userRepository.preload({
+      id: token.user_id,
+      password: newPassword,
+      reseted_password_at: new Date(),
+    });
+
+    const savedUser = await this.userRepository.save(user);
+
+    await this.resetPasswordTokenService.delete(token.id);
+
+    const formatedDate = new Date(now).toLocaleString('pt-br', {
+      timeZone: 'America/Sao_paulo',
+    });
+
+    return await this.sendMailProducerService.sendMail({
+      email: savedUser.email,
+      subject: 'Password redifined',
+      text: `Hello, ${savedUser.username}! Your password has been successfully redifined at ${formatedDate}.`,
+    });
   }
 
   async remove(id: string) {

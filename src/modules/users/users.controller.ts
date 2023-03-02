@@ -3,11 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
   Query,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,6 +17,9 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { PaginationUsersDTO } from './dto/pagination-users.dto';
+import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
+import { Response } from 'express';
+import { VerifyResetPasswordUserDTO } from './dto/verify-reset-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -45,6 +50,30 @@ export class UsersController {
   @Patch()
   update(@Body() updateUserDTO: UpdateUserDTO, @Request() req: any) {
     return this.userService.update(req.user.id, updateUserDTO);
+  }
+
+  @Post('/verify-mail/:token')
+  async verifyMail(@Param('token') token: string) {
+    return this.userService.verifyMail(token);
+  }
+
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() resetPasswordUserDTO: CreateResetPasswordUserDTO,
+    @Res() res: Response,
+  ) {
+    await this.userService.resetPassword(resetPasswordUserDTO);
+    return res.status(HttpStatus.CREATED).json({
+      message: `Reset token sent to ${resetPasswordUserDTO.email}! Don't forget to check span folder!`,
+    });
+  }
+
+  @Post('/reset-password/:token')
+  async veryfyResetPassword(
+    @Param('token') token: string,
+    @Body() { password }: VerifyResetPasswordUserDTO,
+  ) {
+    return this.userService.verifyResetPassword(token, password);
   }
 
   @UseGuards(AuthGuard('jwt'))

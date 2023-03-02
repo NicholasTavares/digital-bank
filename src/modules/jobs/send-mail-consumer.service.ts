@@ -3,33 +3,62 @@ import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
 
-type JobEmailDataProps = {
+type JobEmailTokenDataProps = {
   user_id: string;
-  username: string;
   email: string;
+  subject: string;
+  endpoint: string;
+  valid_time: string;
+  type: 'VERIFY_EMAIL' | 'PASSWORD';
 };
 
-@Processor('send-mail-verification-queue')
+type JobEmailDataProps = {
+  email: string;
+  subject: string;
+  text: string;
+};
+
+@Processor('send-mail-queue')
 export class SendMailConsumerService {
   constructor(
     private readonly mailService: MailerService,
     @Inject(forwardRef(() => VerificationMailTokensService))
     private readonly verificationTokenService: VerificationMailTokensService,
+    private readonly resetPasswordTokenService: ResetPasswordTokenService,
   ) {}
-  @Process('send-mail-verification-job')
-  async sendMailJob(job: Job<JobEmailDataProps>) {
-    const { user_id, username, email } = job.data;
 
-    const token = await this.verificationTokenService.create(user_id);
+  @Process('send-mail-token')
+  async sendMailTokenJob(job: Job<JobEmailTokenDataProps>) {
+    const { user_id, email, subject, endpoint, valid_time, type } = job.data;
+
+    const token =
+      type === 'VERIFY_EMAIL'
+        ? (await this.verificationTokenService.create(user_id)).token
+        : (await this.resetPasswordTokenService.create(user_id)).token;
+
+    const textKeyProporse =
+      type === 'VERIFY_EMAIL' ? 'verify your email' : 'reset your password';
 
     await this.mailService.sendMail({
       to: email,
       from: 'Suport Digital Bank',
-      subject: 'Email verification',
-      text: `Hello, ${username}! Welcome to the Digital Bank.
-      Please verify your email by clicking on the following link: http://localhost:5001/mail-verification/${token.token}.
-      This token is valid for 1 day.`,
+      subject: subject,
+      text: `Please ${textKeyProporse} by clicking on the following link: ${process.env.DNS}:5001/${endpoint}/${token}.
+      This token is valid for ${valid_time}`,
+    });
+  }
+
+  @Process('send-mail')
+  async sendMailJob(job: Job<JobEmailDataProps>) {
+    const { email, subject, text } = job.data;
+
+    await this.mailService.sendMail({
+      to: email,
+      from: 'Suport Digital Bank',
+      subject: subject,
+      text,
     });
   }
 }

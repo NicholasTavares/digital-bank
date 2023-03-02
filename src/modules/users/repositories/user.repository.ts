@@ -66,6 +66,17 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
+  async findUserByEmailForResetPassword(email: string): Promise<User> {
+    const user = await this.findOne({
+      where: {
+        email,
+      },
+      select: ['id'],
+    });
+
+    return user;
+  }
+
   async findUserByEmailForAuth(email: string): Promise<User> {
     const user = await this.createQueryBuilder('user')
       .innerJoin('user.account', 'account')

@@ -14,9 +14,9 @@ WORKDIR /app
 
 USER node
 
-COPY --chown=user:node package.json yarn.lock ./
+COPY --chown=user:node package.json yarn.lock tsconfig.json ./
 
-RUN yarn install --immutable --immutable-cache --check-cache && yarn cache clean --mirror
+RUN yarn install && yarn build && yarn cache clean
 
 ADD . .
 

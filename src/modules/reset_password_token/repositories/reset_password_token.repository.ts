@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { VerificationMailToken } from '../entities/verification_mail_token.entity';
+import { ResetPasswordToken } from '../entities/reset_password_token.entity';
 
 @Injectable()
-export class VerificationMailTokenRepository extends Repository<VerificationMailToken> {
+export class ResetPasswordTokenRepository extends Repository<ResetPasswordToken> {
   constructor(private dataSource: DataSource) {
-    super(VerificationMailToken, dataSource.createEntityManager());
+    super(ResetPasswordToken, dataSource.createEntityManager());
   }
 
-  async findToken(hash: string): Promise<VerificationMailToken> {
+  async findToken(hash: string): Promise<ResetPasswordToken> {
     const token = await this.findOne({
       where: {
         token: hash,
@@ -26,7 +26,7 @@ export class VerificationMailTokenRepository extends Repository<VerificationMail
     user_id: string,
     hash: string,
     expires_at: number,
-  ): Promise<VerificationMailToken> {
+  ): Promise<ResetPasswordToken> {
     const token = this.create({
       user_id,
       token: hash,
@@ -38,7 +38,7 @@ export class VerificationMailTokenRepository extends Repository<VerificationMail
     return token;
   }
 
-  async deleteToken(hash_id: string) {
-    await this.delete(hash_id);
+  async deleteToken(token_id: string) {
+    await this.delete(token_id);
   }
 }

@@ -1,24 +1,24 @@
 version: '3.9'
 
 services:
-  # api:
-  #   build: .
-  #   restart: always
-  #   container_name: api-ngcash
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./src:/usr/ngcash/src
-  #     - ./.env:/usr/ngcash/.env
-  #   command: yarn start:dev
+  api:
+    build: .
+    restart: always
+    container_name: api-ngcash
+    depends_on:
+      - db
+    ports:
+      - 5001:5001
+    volumes:
+      - ./src:/usr/ngcash/src
+      - ./.env:/usr/ngcash/.env
+    command: yarn start:dev
 
   redis:
     image: redis:7-bullseye
     restart: always
     ports:
-      - 6380:6379
+      - 6379:6379
     volumes: 
       - /redis_data:/data
 
