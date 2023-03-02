@@ -25,10 +25,12 @@ export class VerificationMailTokenRepository extends Repository<VerificationMail
   async createToken(
     user_id: string,
     hash: string,
+    expires_at: number,
   ): Promise<VerificationMailToken> {
     const token = this.create({
       user_id,
       token: hash,
+      expires_at,
     });
 
     await this.save(token);

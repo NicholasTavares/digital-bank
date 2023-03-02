@@ -52,6 +52,11 @@ export class UsersController {
     return this.userService.update(req.user.id, updateUserDTO);
   }
 
+  @Post('/verify-mail/:token')
+  async verifyMail(@Param('token') token: string) {
+    return this.userService.verifyMail(token);
+  }
+
   @Post('/reset-password')
   async resetPassword(
     @Body() resetPasswordUserDTO: CreateResetPasswordUserDTO,
