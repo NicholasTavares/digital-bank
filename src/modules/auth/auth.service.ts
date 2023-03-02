@@ -34,10 +34,8 @@ export class AuthService {
     try {
       user = await this.userService.findUserByEmailForAuth(email);
     } catch (error) {
-      return null;
+      throw new UnauthorizedException('Email e/ou senha inválidos');
     }
-
-    if (!user) throw new UnauthorizedException('Email e/ou senha inválidos');
 
     const isPasswordValid = compareSync(password, user.password);
     if (!isPasswordValid) {
