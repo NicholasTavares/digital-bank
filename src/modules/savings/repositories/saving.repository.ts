@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Saving } from '../entities/saving.entity';
-import { Account } from 'src/modules/accounts/entities/account.entity';
+import { Account } from '../../accounts/entities/account.entity';
 
 @Injectable()
 export class SavingRepository extends Repository<Saving> {
@@ -104,5 +104,15 @@ export class SavingRepository extends Repository<Saving> {
     }
 
     return withdraw;
+  }
+
+  async getSavings(limit: number, offset: number): Promise<Saving[]> {
+    const savings = await this.find({
+      select: ['id'],
+      skip: offset,
+      take: limit,
+    });
+
+    return savings;
   }
 }

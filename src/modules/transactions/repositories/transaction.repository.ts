@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transaction } from '../entities/transaction.entity';
-import { Account } from 'src/modules/accounts/entities/account.entity';
+import { Account } from '../../accounts/entities/account.entity';
 
 @Injectable()
 export class TransactionRepository extends Repository<Transaction> {

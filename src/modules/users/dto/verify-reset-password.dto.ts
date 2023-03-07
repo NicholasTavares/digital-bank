@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { MessagesHelper } from 'src/helpers/messagesHelper.helper';
-import { RegExHelper } from 'src/helpers/regex.helper';
-import { Match } from 'src/utils/matchDecorator.util';
+import { RegExHelper } from '../../../helpers/regex.helper';
+import { Match } from '../../../utils/matchDecorator.util';
+import { MessagesHelper } from '../../../helpers/messagesHelper.helper';
 
 export class VerifyResetPasswordUserDTO {
   @IsNotEmpty({ message: 'Senha é obrigatória.' })

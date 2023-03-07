@@ -9,10 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import { Saving } from 'src/modules/savings/entities/saving.entity';
-
+import { User } from '../../users/entities/user.entity';
+import { Transaction } from '../../transactions/entities/transaction.entity';
+import { Saving } from '../../savings/entities/saving.entity';
 @Entity('accounts')
 export class Account {
   @PrimaryGeneratedColumn('uuid')

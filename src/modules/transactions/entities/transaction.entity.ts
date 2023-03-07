@@ -1,4 +1,4 @@
-import { Account } from 'src/modules/accounts/entities/account.entity';
+import { Account } from '../../accounts/entities/account.entity';
 import {
   Column,
   CreateDateColumn,
