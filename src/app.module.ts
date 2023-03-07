@@ -12,6 +12,8 @@ import { JobsModule } from './modules/jobs/jobs.module';
 import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
 import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
 import dbConfig from './config/db.config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SeedsModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -42,6 +44,7 @@ import dbConfig from './config/db.config';
         ...configService.get('database'),
       }),
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     AccountsModule,
     TransactionsModule,
@@ -50,6 +53,7 @@ import dbConfig from './config/db.config';
     JobsModule,
     VerificationMailTokensModule,
     ResetPasswordTokenModule,
+    SeedsModule,
   ],
   controllers: [],
   providers: [],

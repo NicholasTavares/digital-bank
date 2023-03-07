@@ -1,7 +1,7 @@
 import { hashSync } from 'bcrypt';
-import { Account } from 'src/modules/accounts/entities/account.entity';
-import { ResetPasswordToken } from 'src/modules/reset_password_token/entities/reset_password_token.entity';
-import { VerificationMailToken } from 'src/modules/verification_mail_tokens/entities/verification_mail_token.entity';
+import { Account } from '../../accounts/entities/account.entity';
+import { ResetPasswordToken } from '../../reset_password_token/entities/reset_password_token.entity';
+import { VerificationMailToken } from '../../verification_mail_tokens/entities/verification_mail_token.entity';
 import {
   BeforeInsert,
   Column,

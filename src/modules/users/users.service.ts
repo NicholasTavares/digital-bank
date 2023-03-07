@@ -4,7 +4,7 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { PaginationUsersDTO } from './dto/pagination-users.dto';
-import { SendMailProducerService } from 'src/modules/jobs/send-mail-producer.service';
+import { SendMailProducerService } from '../jobs/send-mail-producer.service';
 import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
