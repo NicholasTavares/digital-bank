@@ -13,6 +13,7 @@ import { VerificationMailTokensModule } from './modules/verification_mail_tokens
 import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
 import dbConfig from './config/db.config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SeedsModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     JobsModule,
     VerificationMailTokensModule,
     ResetPasswordTokenModule,
+    SeedsModule,
   ],
   controllers: [],
   providers: [],
