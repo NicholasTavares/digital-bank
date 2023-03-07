@@ -1,10 +1,9 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { SavingsService } from '../savings/savings.service';
-import { Saving } from '../savings/entities/saving.entity';
 
 type JobInterestRateProps = {
-  saving_ids: Saving[];
+  saving_ids: number[];
 };
 
 @Processor('interest-rate-queue')

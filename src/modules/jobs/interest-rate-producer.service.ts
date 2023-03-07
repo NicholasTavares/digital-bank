@@ -11,7 +11,7 @@ export class InterestRateProducerService {
 
   async sendInterestRate(saving_ids: Saving[]) {
     await this.queue.add('interest-rate', {
-      saving_ids,
+      saving_ids: saving_ids.map((sav) => sav.id),
     });
   }
 }

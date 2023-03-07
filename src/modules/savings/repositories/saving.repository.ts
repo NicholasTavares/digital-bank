@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Saving } from '../entities/saving.entity';
 import { Account } from '../../accounts/entities/account.entity';
 
@@ -114,5 +114,35 @@ export class SavingRepository extends Repository<Saving> {
     });
 
     return savings;
+  }
+
+  async incrementSaving(savingIds: number[]) {
+    const incrementSaving = 0.01;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const savings = await queryRunner.manager.find(Saving, {
+        where: {
+          id: In(savingIds),
+        },
+        select: ['id', 'yield', 'balance'],
+      });
+
+      for (const saving of savings) {
+        saving.yield += saving.balance * incrementSaving;
+      }
+
+      await queryRunner.manager.save(savings);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.log('ERROR', err);
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException('Increment cron yield error!');
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

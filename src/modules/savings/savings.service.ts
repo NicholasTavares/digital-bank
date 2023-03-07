@@ -9,6 +9,8 @@ import { TransactionSavingValueDTO } from './dto/trasaction-saving-value.dto';
 import { AccountsService } from '../accounts/accounts.service';
 import { Account } from '../accounts/entities/account.entity';
 import { UsersService } from '../users/users.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { InterestRateProducerService } from '../jobs/interest-rate-producer.service';
 
 @Injectable()
 export class SavingsService {
@@ -16,6 +18,7 @@ export class SavingsService {
     private readonly savingRepository: SavingRepository,
     private readonly usersService: UsersService,
     private readonly accountsRepository: AccountsService,
+    private readonly interestRateProducerService: InterestRateProducerService,
   ) {}
 
   async findOne(account_id: string): Promise<Saving> {
@@ -81,5 +84,24 @@ export class SavingsService {
     );
 
     return withdraw;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+    name: 'interest-rate',
+    timeZone: process.env.TZ,
+  })
+  async interestRate() {
+    const limit = 5;
+    let offset = 0;
+    let savings = await this.savingRepository.getSavings(limit, offset);
+    while (savings.length > 0) {
+      await this.interestRateProducerService.sendInterestRate(savings);
+      offset += 5;
+      savings = await this.savingRepository.getSavings(limit, offset);
+    }
+  }
+
+  async attInterestRate(saving_ids: number[]) {
+    await this.savingRepository.incrementSaving(saving_ids);
   }
 }
