@@ -25,6 +25,12 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ default: null })
+  avatar_url: string;
+
+  @Column({ default: null })
+  avatar_key: string;
+
   @Column({ select: false })
   password: string;
 
