@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -104,6 +104,24 @@ export class UsersService {
     await this.verificationMailTokensService.delete(token.id);
 
     return user;
+  }
+
+  async resendVerifyMail(user_id: string, user_email: string) {
+    await this.verificationMailTokensService.deleteMany(user_id);
+
+    await this.sendMailProducerService.sendMailToken({
+      user_id,
+      email: user_email,
+      subject: 'Verify your email',
+      endpoint: 'users/verify-mail',
+      valid_time: '24 hours',
+      type: 'VERIFY_EMAIL',
+    });
+
+    return {
+      status: HttpStatus.CREATED,
+      message: `Reset token sent to ${user_email}! Don't forget to check span folder!`,
+    };
   }
 
   async resetPassword({ email }: CreateResetPasswordUserDTO) {

@@ -57,6 +57,12 @@ export class UsersController {
     return this.userService.verifyMail(token);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/resend-verify-mail')
+  async resendVerifyMail(@Request() req: any) {
+    return await this.userService.resendVerifyMail(req.user.id, req.user.email);
+  }
+
   @Post('/reset-password')
   async resetPassword(
     @Body() resetPasswordUserDTO: CreateResetPasswordUserDTO,

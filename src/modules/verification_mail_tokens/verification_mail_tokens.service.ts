@@ -33,4 +33,10 @@ export class VerificationMailTokensService {
   async delete(token_id: string) {
     await this.verificationMailTokenRepository.deleteToken(token_id);
   }
+
+  async deleteMany(user_id: string) {
+    await this.verificationMailTokenRepository.delete({
+      user_id,
+    });
+  }
 }
