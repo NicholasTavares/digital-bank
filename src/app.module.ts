@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { BadRequestException, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +14,8 @@ import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_p
 import dbConfig from './config/db.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SeedsModule } from './seed/seed.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Module({
   imports: [
@@ -37,6 +39,22 @@ import { SeedsModule } from './seed/seed.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
+    }),
+    MulterModule.register({
+      storage: diskStorage({}),
+      fileFilter: (
+        req: Request,
+        file: Express.Multer.File,
+        acceptFile: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+          return acceptFile(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          );
+        }
+        acceptFile(null, true);
+      },
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
