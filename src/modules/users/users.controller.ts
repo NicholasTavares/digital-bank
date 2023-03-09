@@ -10,7 +10,9 @@ import {
   Query,
   Request,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -20,6 +22,8 @@ import { PaginationUsersDTO } from './dto/pagination-users.dto';
 import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
 import { Response } from 'express';
 import { VerifyResetPasswordUserDTO } from './dto/verify-reset-password.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -50,6 +54,28 @@ export class UsersController {
   @Patch()
   update(@Body() updateUserDTO: UpdateUserDTO, @Request() req: any) {
     return this.userService.update(req.user.id, updateUserDTO);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 1024 * 1024 }, // limit to 1MB
+    }),
+  )
+  avatar(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
+    return this.userService.avatar(
+      req.user.id,
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/avatar')
+  removeAvatar(@Request() req: any) {
+    return this.userService.removeAvatar(req.user.id);
   }
 
   @Post('/verify-mail/:token')

@@ -9,6 +9,9 @@ import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
 import * as bcrypt from 'bcrypt';
+import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +20,7 @@ export class UsersService {
     private readonly sendMailProducerService: SendMailProducerService,
     private readonly verificationMailTokensService: VerificationMailTokensService,
     private readonly resetPasswordTokenService: ResetPasswordTokenService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findAll({ text }: PaginationUsersDTO): Promise<User[]> {
@@ -82,6 +86,75 @@ export class UsersService {
     const user = await this.userRepository.updateUser(id, updateUserDTO);
 
     return user;
+  }
+
+  async avatar(
+    user_id: string,
+    dataBuffer: Buffer,
+    filename: string,
+    mimetype: string,
+  ): Promise<User> {
+    const s3 = new S3();
+
+    const user = await this.userRepository.findOne({
+      where: {
+        id: user_id,
+      },
+      select: ['id', 'avatar_key', 'avatar_url'],
+    });
+
+    if (user.avatar_url) {
+      await s3
+        .deleteObject({
+          Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+          Key: user.avatar_key,
+        })
+        .promise();
+    }
+
+    const uploadResult = await s3
+      .upload({
+        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        ACL: 'public-read-write',
+        Body: dataBuffer,
+        Key: `${randomUUID()}-${filename}`,
+        ContentType: mimetype,
+      })
+      .promise();
+
+    const updatedUser = await this.userRepository.preload({
+      id: user.id,
+      avatar_url: uploadResult.Location,
+      avatar_key: uploadResult.Key,
+    });
+
+    return this.userRepository.save(updatedUser);
+  }
+
+  async removeAvatar(user_id: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: user_id,
+      },
+      select: ['id', 'avatar_key', 'avatar_url'],
+    });
+
+    const s3 = new S3();
+
+    await s3
+      .deleteObject({
+        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        Key: user.avatar_key,
+      })
+      .promise();
+
+    const updatedUser = await this.userRepository.preload({
+      id: user.id,
+      avatar_key: null,
+      avatar_url: null,
+    });
+
+    await this.userRepository.save(updatedUser);
   }
 
   async verifyMail(hash: string): Promise<User> {
