@@ -96,6 +96,22 @@ export class UsersService {
   ): Promise<User> {
     const s3 = new S3();
 
+    const user = await this.userRepository.findOne({
+      where: {
+        id: user_id,
+      },
+      select: ['id', 'avatar_key', 'avatar_url'],
+    });
+
+    if (user.avatar_url) {
+      await s3
+        .deleteObject({
+          Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+          Key: user.avatar_key,
+        })
+        .promise();
+    }
+
     const uploadResult = await s3
       .upload({
         Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
@@ -106,15 +122,39 @@ export class UsersService {
       })
       .promise();
 
-    const newFile = await this.userRepository.preload({
-      id: user_id,
+    const updatedUser = await this.userRepository.preload({
+      id: user.id,
       avatar_url: uploadResult.Location,
       avatar_key: uploadResult.Key,
     });
 
-    await this.userRepository.save(newFile);
+    return this.userRepository.save(updatedUser);
+  }
 
-    return newFile;
+  async removeAvatar(user_id: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: user_id,
+      },
+      select: ['id', 'avatar_key', 'avatar_url'],
+    });
+
+    const s3 = new S3();
+
+    await s3
+      .deleteObject({
+        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        Key: user.avatar_key,
+      })
+      .promise();
+
+    const updatedUser = await this.userRepository.preload({
+      id: user.id,
+      avatar_key: null,
+      avatar_url: null,
+    });
+
+    await this.userRepository.save(updatedUser);
   }
 
   async verifyMail(hash: string): Promise<User> {
