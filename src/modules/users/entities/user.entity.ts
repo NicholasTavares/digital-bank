@@ -26,10 +26,10 @@ export class User {
   email: string;
 
   @Column({ default: null })
-  avatar_url: string;
+  avatar_url: string | null;
 
   @Column({ default: null })
-  avatar_key: string;
+  avatar_key: string | null;
 
   @Column({ select: false })
   password: string;
