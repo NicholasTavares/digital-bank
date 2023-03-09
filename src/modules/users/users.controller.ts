@@ -58,7 +58,11 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/avatar')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 1024 * 1024 }, // limit to 1MB
+    }),
+  )
   avatar(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
     return this.userService.avatar(
       req.user.id,
@@ -66,6 +70,12 @@ export class UsersController {
       file.originalname,
       file.mimetype,
     );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/avatar')
+  removeAvatar(@Request() req: any) {
+    return this.userService.removeAvatar(req.user.id);
   }
 
   @Post('/verify-mail/:token')
