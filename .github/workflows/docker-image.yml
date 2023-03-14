@@ -30,8 +30,6 @@ jobs:
           load: true # Export to Docker Engine rather than pushing to a registry
           tags: ${{ github.run_id }}
           target: test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           platforms: linux/amd64
 
       - name: Run CVEs scan (Trivy non-blocking)
@@ -52,6 +50,13 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
+      - name: Check if Trivy scan results file exists
+        run: |
+          if [ ! -f trivy-results.sarif ]; then
+            echo "Trivy scan results file not found"
+            exit 1
+          fi
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
@@ -64,6 +69,4 @@ jobs:
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64,linux/arm/v7
