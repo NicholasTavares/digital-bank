@@ -17,11 +17,10 @@ CMD [ "echo", "Running tests and building application..." ]
 
 FROM node:18-bullseye-slim
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    tini \
-    && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update \ 
+    && apt-get install -y --no-install-recommends \ 
+    tini \ 
+    && rm -rf /var/lib/apt/lists/* 
 # set entrypoint to always run commands with tini
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
@@ -36,6 +35,6 @@ COPY --chown=user:node package.json yarn.lock tsconfig.json ./
 
 RUN yarn install && yarn build && yarn cache clean
 
-COPY --from=test --chown=node:node /app/dist ./dist
+ADD . .
 
 CMD [ "node", "dist/main" ]
