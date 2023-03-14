@@ -13,9 +13,21 @@ import { InterestRateConsumerService } from './interest-rate-consumer.service';
   imports: [
     BullModule.registerQueue({
       name: 'send-mail-queue',
+      defaultJobOptions: {
+        backoff: {
+          delay: 1000 * 10,
+          type: 'fixed',
+        },
+      },
     }),
     BullModule.registerQueue({
       name: 'interest-rate-queue',
+      defaultJobOptions: {
+        backoff: {
+          delay: 1000 * 60,
+          type: 'fixed',
+        },
+      },
     }),
     VerificationMailTokensModule,
     ResetPasswordTokenModule,

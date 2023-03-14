@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Process, Processor } from '@nestjs/bull';
+import { OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
 import { Inject, forwardRef } from '@nestjs/common';
@@ -25,7 +25,7 @@ export class SendMailConsumerService {
   constructor(
     private readonly mailService: MailerService,
     @Inject(forwardRef(() => VerificationMailTokensService))
-    private readonly verificationTokenService: VerificationMailTokensService,
+    private readonly verificationMailTokenService: VerificationMailTokensService,
     private readonly resetPasswordTokenService: ResetPasswordTokenService,
   ) {}
 
@@ -35,7 +35,7 @@ export class SendMailConsumerService {
 
     const token =
       type === 'VERIFY_EMAIL'
-        ? (await this.verificationTokenService.create(user_id)).token
+        ? (await this.verificationMailTokenService.create(user_id)).token
         : (await this.resetPasswordTokenService.create(user_id)).token;
 
     const textKeyProporse =
@@ -53,12 +53,20 @@ export class SendMailConsumerService {
   @Process('send-mail')
   async sendMailJob(job: Job<JobEmailDataProps>) {
     const { email, subject, text } = job.data;
-
     await this.mailService.sendMail({
       to: email,
       from: 'Suport Digital Bank',
       subject: subject,
       text,
     });
+  }
+
+  @OnQueueFailed()
+  async onQueueFailed(job: Job, err: Error) {
+    if (job.attemptsMade < 3) {
+      return await job.retry();
+    }
+
+    await job.moveToFailed({ message: err.message });
   }
 }
