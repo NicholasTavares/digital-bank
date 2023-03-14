@@ -56,8 +56,20 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
+      - name: Docker Metadata for Final Image Build
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: nicholastavares/digital-bank
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=07
+
       - name: Docker Build and Push to Docker Hub
         uses: docker/build-push-action@v4
         with:
           push: true
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
