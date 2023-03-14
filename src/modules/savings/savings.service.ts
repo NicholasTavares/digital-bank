@@ -11,6 +11,7 @@ import { Account } from '../accounts/entities/account.entity';
 import { UsersService } from '../users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InterestRateProducerService } from '../jobs/interest-rate-producer.service';
+import { SavingSummary } from './interfaces';
 
 @Injectable()
 export class SavingsService {
@@ -21,7 +22,7 @@ export class SavingsService {
     private readonly interestRateProducerService: InterestRateProducerService,
   ) {}
 
-  async findOne(account_id: string): Promise<Saving> {
+  async findOne(account_id: string): Promise<SavingSummary> {
     const user = await this.savingRepository.findSaving(account_id);
 
     return user;

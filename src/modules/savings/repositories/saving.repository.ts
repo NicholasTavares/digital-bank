@@ -6,6 +6,7 @@ import {
 import { DataSource, In, Repository } from 'typeorm';
 import { Saving } from '../entities/saving.entity';
 import { Account } from '../../accounts/entities/account.entity';
+import { SavingSummary } from '../interfaces';
 
 @Injectable()
 export class SavingRepository extends Repository<Saving> {
@@ -13,7 +14,7 @@ export class SavingRepository extends Repository<Saving> {
     super(Saving, dataSource.createEntityManager());
   }
 
-  async findSaving(account_id: string): Promise<Saving> {
+  async findSaving(account_id: string): Promise<SavingSummary> {
     const saving = await this.findOne({
       where: {
         account_id,
