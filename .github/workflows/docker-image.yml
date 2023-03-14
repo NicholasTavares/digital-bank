@@ -39,9 +39,6 @@ jobs:
           exit-code: 0
           format: table
 
-      - name: Create directory for Trivy scan results
-        run: mkdir -p ${{ github.workspace }}/trivy-results
-
       - name: Run Trivy for HIGH,CRITICAL CVEs and report (blocking)
         uses: aquasecurity/trivy-action@master
         with:
@@ -51,13 +48,13 @@ jobs:
           vuln-type: 'os,library'
           severity: 'HIGH,CRITICAL'
           format: 'sarif'
-          output: '${{ github.workspace }}/trivy-results/trivy-results.sarif'
+          output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: '${{ github.workspace }}/trivy-results/trivy-results.sarif'
+          sarif_file: 'trivy-results.sarif'
 
       - name: Docker Build and Push to Docker Hub
         uses: docker/build-push-action@v4
