@@ -2,23 +2,73 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ['master']
   pull_request:
-    branches: [ "master" ]
+    branches: ['master']
 
 jobs:
   build-image:
     name: Build Image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker build
-        uses: docker/build-push-action@v3
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v4
+        with:
+          push: false
+          load: true # Export to Docker Engine rather than pushing to a registry
+          tags: ${{ github.run_id }}
+          target: test
+          platforms: linux/amd64
+
+      - name: Run CVEs scan (Trivy non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.run_id }}
+          exit-code: 0
+          format: table
+
+      - name: Run Trivy for HIGH,CRITICAL CVEs and report (blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.run_id }}
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'HIGH,CRITICAL'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Docker Metadata for Final Image Build
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: nicholastavares/digital-bank
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=07
+
+      - name: Docker Build and Push to Docker Hub
+        uses: docker/build-push-action@v4
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
