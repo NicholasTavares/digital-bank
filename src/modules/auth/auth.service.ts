@@ -3,6 +3,10 @@ import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { compareSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import Redis from 'ioredis';
+import { v4 as uuidv4 } from 'uuid';
+import { PayloadJWT } from './interfaces/payload-jwt.interface';
+const redisClient = new Redis();
 
 @Injectable()
 export class AuthService {
@@ -17,6 +21,7 @@ export class AuthService {
       email: user.email,
       username: user.username,
       account_id: user.account_id,
+      jti: uuidv4(),
     };
 
     return {
@@ -43,5 +48,28 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async addToBlacklist(token: string) {
+    if (!token) {
+      throw new UnauthorizedException('Authorization header not found');
+    }
+
+    const decodedToken = this.jwtService.decode(token, {
+      complete: true,
+    }) as PayloadJWT;
+
+    const tokenId = decodedToken.payload.jti;
+    const expiration = decodedToken.payload.exp;
+
+    await redisClient.set(tokenId, 'revoked', 'EXAT', expiration);
+  }
+
+  async isTokenRevoked(token: string) {
+    const decodedToken = this.jwtService.decode(token, {
+      complete: true,
+    }) as PayloadJWT;
+    const result = await redisClient.get(decodedToken.payload.jti);
+    return result === 'revoked';
   }
 }
