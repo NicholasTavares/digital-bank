@@ -13,7 +13,6 @@ import { CheckTokenMiddleware } from './middlewares/check-token.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    UsersModule,
     PassportModule,
     JobsModule,
     UsersModule,
