@@ -8,10 +8,12 @@ import { SendMailProducerService } from '../jobs/send-mail-producer.service';
 import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
+import Redis from 'ioredis';
 import * as bcrypt from 'bcrypt';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+const redisClient = new Redis();
 
 @Injectable()
 export class UsersService {
@@ -237,6 +239,12 @@ export class UsersService {
     const formatedDate = new Date(now).toLocaleString('pt-br', {
       timeZone: 'America/Sao_paulo',
     });
+
+    const keys = await redisClient.keys(`user:${user.id}:jwt:*`);
+
+    if (keys.length > 0) {
+      await redisClient.del(keys);
+    }
 
     return await this.sendMailProducerService.sendMail({
       email: savedUser.email,

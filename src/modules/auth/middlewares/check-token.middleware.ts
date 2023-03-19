@@ -9,8 +9,8 @@ export class CheckTokenMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split(' ')[1];
     if (token) {
-      const isRevoked = await this.authService.isTokenRevoked(token);
-      if (isRevoked) {
+      const isLogged = await this.authService.isLogged(token);
+      if (!isLogged) {
         return res.status(401).send({ message: 'Unauthorized' });
       }
     }
