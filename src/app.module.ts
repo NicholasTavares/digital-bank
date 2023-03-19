@@ -1,4 +1,9 @@
-import { BadRequestException, Module } from '@nestjs/common';
+import {
+  BadRequestException,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SeedsModule } from './seed/seed.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.middleware';
 
 @Module({
   imports: [
@@ -76,4 +82,11 @@ import { diskStorage } from 'multer';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CheckTokenMiddleware)
+      .exclude({ path: 'auth/(.*)', method: RequestMethod.ALL })
+      .forRoutes('*');
+  }
+}
