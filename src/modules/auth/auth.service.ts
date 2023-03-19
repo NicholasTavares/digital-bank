@@ -16,16 +16,31 @@ export class AuthService {
   ) {}
 
   async login(user) {
+    const token_id = uuidv4();
+
     const payload = {
       sub: user.id,
       email: user.email,
       username: user.username,
       account_id: user.account_id,
-      jti: uuidv4(),
+      jti: token_id,
     };
 
+    const token = this.jwtService.sign(payload);
+
+    const decodedToken = this.jwtService.decode(token, {
+      complete: true,
+    }) as PayloadJWT;
+
+    await redisClient.set(
+      `user:${user.id}:jwt:${token_id}`,
+      'JWT_LOGIN',
+      'EXAT',
+      decodedToken.payload.exp,
+    );
+
     return {
-      token: this.jwtService.sign(payload),
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -50,7 +65,17 @@ export class AuthService {
     return user;
   }
 
-  async addToBlacklist(token: string) {
+  async removeTokensFromWhiteList(user_id: string) {
+    const keys = await redisClient.keys(`user:${user_id}:jwt:*`);
+
+    if (keys.length === 0) {
+      return;
+    }
+
+    await redisClient.del(keys);
+  }
+
+  async removeFromWhiteList(token: string) {
     if (!token) {
       throw new UnauthorizedException('Authorization header not found');
     }
@@ -59,17 +84,24 @@ export class AuthService {
       complete: true,
     }) as PayloadJWT;
 
-    const tokenId = decodedToken.payload.jti;
-    const expiration = decodedToken.payload.exp;
-
-    await redisClient.set(tokenId, 'revoked', 'EXAT', expiration);
+    await redisClient.del(
+      `user:${decodedToken.payload.sub}:jwt:${decodedToken.payload.jti}`,
+    );
   }
 
-  async isTokenRevoked(token: string) {
+  async isLogged(token: string) {
     const decodedToken = this.jwtService.decode(token, {
       complete: true,
     }) as PayloadJWT;
-    const result = await redisClient.get(decodedToken.payload.jti);
-    return result === 'revoked';
+
+    const result = await redisClient.get(
+      `user:${decodedToken.payload.sub}:jwt:${decodedToken.payload.jti}`,
+    );
+
+    if (result) {
+      return true;
+    }
+
+    return false;
   }
 }
