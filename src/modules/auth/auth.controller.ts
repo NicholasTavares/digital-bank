@@ -15,7 +15,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   async logout(@Req() req: any) {
-    await this.authService.addToBlacklist(
+    await this.authService.removeFromWhiteList(
       req.headers.authorization.split(' ')[1],
     );
   }
