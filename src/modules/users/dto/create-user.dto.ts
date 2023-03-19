@@ -26,7 +26,12 @@ export class CreateUserDTO {
   readonly email: string;
 
   @IsNotEmpty({ message: 'Data de nascimento é obrigatória.' })
-  @IsISO8601(true, { message: 'Data inválida' })
+  @IsISO8601(
+    { strict: true },
+    {
+      message: 'Data inválida',
+    },
+  )
   readonly birth_date: Date;
 
   @IsNotEmpty({ message: 'Senha é obrigatória.' })

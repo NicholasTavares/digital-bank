@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JobsModule } from '../jobs/jobs.module';
+import { CheckTokenMiddleware } from './middlewares/check-token.middleware';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JobsModule } from '../jobs/jobs.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, CheckTokenMiddleware],
+  exports: [CheckTokenMiddleware, AuthService],
 })
 export class AuthModule {}

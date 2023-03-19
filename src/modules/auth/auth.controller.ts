@@ -11,4 +11,12 @@ export class AuthController {
   async login(@Req() req: any) {
     return this.authService.login(req.user);
   }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Req() req: any) {
+    await this.authService.addToBlacklist(
+      req.headers.authorization.split(' ')[1],
+    );
+  }
 }
