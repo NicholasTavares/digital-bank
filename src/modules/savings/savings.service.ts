@@ -70,15 +70,16 @@ export class SavingsService {
 
     const saving = await this.savingRepository.findSaving(account_id);
 
-    if (saving.balance < roundedAndConvertedValueToCents) {
+    if (saving.total < roundedAndConvertedValueToCents) {
       throw new BadRequestException('Saldo insuficiente.');
     }
 
     const account = await this.accountsRepository.findOne(account_id);
 
     const withdraw = await this.savingRepository.withdrawValue(
-      saving.balance,
       saving.id,
+      saving.balance,
+      saving.yield,
       account.id,
       account.balance,
       roundedAndConvertedValueToCents,
@@ -92,12 +93,12 @@ export class SavingsService {
     timeZone: process.env.TZ,
   })
   async interestRate() {
-    const limit = 5;
+    const limit = 100;
     let offset = 0;
     let savings = await this.savingRepository.getSavings(limit, offset);
     while (savings.length > 0) {
       await this.interestRateProducerService.sendInterestRate(savings);
-      offset += 5;
+      offset += limit;
       savings = await this.savingRepository.getSavings(limit, offset);
     }
   }

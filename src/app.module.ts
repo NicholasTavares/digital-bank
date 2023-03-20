@@ -18,7 +18,6 @@ import { VerificationMailTokensModule } from './modules/verification_mail_tokens
 import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
 import dbConfig from './config/db.config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SeedsModule } from './seed/seed.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.middleware';
@@ -77,7 +76,6 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
     JobsModule,
     VerificationMailTokensModule,
     ResetPasswordTokenModule,
-    SeedsModule,
   ],
   controllers: [],
   providers: [],

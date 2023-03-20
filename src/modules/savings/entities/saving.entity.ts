@@ -20,6 +20,9 @@ export class Saving {
   @Column({ default: 0 })
   yield: number;
 
+  @Column()
+  total: number;
+
   @Column({ name: 'account_id' })
   account_id: string;
 
