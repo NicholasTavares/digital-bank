@@ -10,7 +10,7 @@ import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
 
 const INITIAL_BALANCE_IN_CENTS = 10000; // 100 reais
-const INITIAL_SAVING_BALANCE_IN_CENTS = 1000; // 10 reais
+const INITIAL_SAVING_BALANCE_TOTAL_IN_CENTS = 1000; // 10 reais
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -103,7 +103,8 @@ export class UserRepository extends Repository<User> {
       account: {
         balance: INITIAL_BALANCE_IN_CENTS,
         saving: {
-          balance: INITIAL_SAVING_BALANCE_IN_CENTS,
+          balance: INITIAL_SAVING_BALANCE_TOTAL_IN_CENTS,
+          total: INITIAL_SAVING_BALANCE_TOTAL_IN_CENTS,
         },
       },
     });
