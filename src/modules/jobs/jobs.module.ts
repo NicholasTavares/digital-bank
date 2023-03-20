@@ -18,6 +18,7 @@ import { InterestRateConsumerService } from './interest-rate-consumer.service';
           delay: 1000 * 10,
           type: 'fixed',
         },
+        removeOnComplete: true,
       },
     }),
     BullModule.registerQueue({
@@ -27,6 +28,7 @@ import { InterestRateConsumerService } from './interest-rate-consumer.service';
           delay: 1000 * 60,
           type: 'fixed',
         },
+        removeOnComplete: true,
       },
     }),
     VerificationMailTokensModule,
