@@ -18,7 +18,7 @@ async function bootstrap() {
       users.push({
         username: faker.internet.userName(),
         email: faker.internet.email(),
-        birth_date: faker.date.birthdate(),
+        birth_date: faker.date.birthdate({ min: 18 }),
         password: pass,
         passwordConfirm: pass,
       });
