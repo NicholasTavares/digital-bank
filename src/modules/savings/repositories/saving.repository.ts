@@ -19,7 +19,7 @@ export class SavingRepository extends Repository<Saving> {
       where: {
         account_id,
       },
-      select: ['id', 'balance', 'yield'],
+      select: ['id', 'balance', 'yield', 'total'],
     });
 
     if (!saving) {
@@ -45,23 +45,25 @@ export class SavingRepository extends Repository<Saving> {
 
       const saving = await this.findSaving(accountToBeDebitedId);
 
-      const newSavingBalance = saving.balance + value;
-
       const accountToBeDebited = await queryRunner.manager.preload(Account, {
         id: accountToBeDebitedId,
         balance: accountToBeDebitedNewBalance,
       });
 
-      deposit = await queryRunner.manager.preload(Saving, {
-        id: saving.id,
-        balance: newSavingBalance,
+      deposit = await queryRunner.manager.findOne(Saving, {
+        where: {
+          id: saving.id,
+        },
       });
+
+      deposit.balance += value;
+      deposit.total += value;
 
       await queryRunner.manager.save([accountToBeDebited, deposit]);
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException('Erro ao concluir deposito!');
+      throw new BadRequestException('Error completing deposit!');
     } finally {
       await queryRunner.release();
     }
@@ -70,8 +72,9 @@ export class SavingRepository extends Repository<Saving> {
   }
 
   async withdrawValue(
-    savingToBeDebitedBalance: number,
     savingToBeDebitedId: string,
+    savingToBeDebitedBalance: number,
+    savingToBeDebitedYield: number,
     accountToBeCreditedId: string,
     accountToBeCreditedBalance: number,
     value: number,
@@ -83,11 +86,21 @@ export class SavingRepository extends Repository<Saving> {
     let withdraw: Account;
 
     try {
-      const savingToBeDebitedNewBalance = savingToBeDebitedBalance - value;
+      let savingToBeDebitedNewBalance = savingToBeDebitedBalance;
+      let savingToBeDebitedNewYield = savingToBeDebitedYield;
+
+      if (value >= savingToBeDebitedYield) {
+        savingToBeDebitedNewYield = 0;
+        savingToBeDebitedNewBalance -= value - savingToBeDebitedYield;
+      } else if (value < savingToBeDebitedYield) {
+        savingToBeDebitedNewYield -= value;
+      }
 
       const savingToBeDebited = await queryRunner.manager.preload(Saving, {
         id: savingToBeDebitedId,
         balance: savingToBeDebitedNewBalance,
+        yield: savingToBeDebitedNewYield,
+        total: savingToBeDebitedNewBalance + savingToBeDebitedNewYield,
       });
 
       withdraw = await queryRunner.manager.preload(Account, {
@@ -129,11 +142,12 @@ export class SavingRepository extends Repository<Saving> {
         where: {
           id: In(savingIds),
         },
-        select: ['id', 'yield', 'balance'],
+        select: ['id', 'yield', 'balance', 'total'],
       });
 
       for (const saving of savings) {
         saving.yield += saving.balance * incrementSaving;
+        saving.total = saving.balance + saving.yield;
       }
 
       await queryRunner.manager.save(savings);
