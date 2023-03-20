@@ -13,7 +13,7 @@ async function bootstrap() {
     const usersService = application.get(UsersService);
     const users: CreateUserDTO[] = [];
 
-    for (let i = 0; i <= +seedCount; i++) {
+    for (let i = 0; i < +seedCount; i++) {
       const pass = faker.internet.password() + '$';
       users.push({
         username: faker.internet.userName(),
