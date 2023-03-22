@@ -4,6 +4,8 @@ import { Job } from 'bull';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
+import * as pug from 'pug';
+import * as path from 'path';
 
 type JobEmailTokenDataProps = {
   user_id: string;
@@ -53,12 +55,27 @@ export class SendMailConsumerService {
   @Process('send-mail')
   async sendMailJob(job: Job<JobEmailDataProps>) {
     const { email, subject, text } = job.data;
-    await this.mailService.sendMail({
-      to: email,
-      from: 'Suport Digital Bank',
-      subject: subject,
-      text,
-    });
+
+    try {
+      const templatePath = path.join(
+        __dirname,
+        'templates',
+        'password-redifined.pug',
+      );
+      const html = pug.renderFile(templatePath, {
+        title: subject,
+        text,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        from: 'Suport Digital Bank',
+        subject: subject,
+        html,
+      });
+    } catch (err) {
+      console.error('ERROR on sending mail: ', err);
+    }
   }
 
   @OnQueueFailed()
