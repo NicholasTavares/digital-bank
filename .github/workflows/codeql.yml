@@ -40,6 +40,9 @@ jobs:
       with:
         category: 'code_ql'
       
+    - name: List files in working directory
+      run: ls -R $GITHUB_WORKSPACE
+
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
       with:
