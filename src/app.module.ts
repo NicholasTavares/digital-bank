@@ -29,14 +29,19 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
       },
+      defaultJobOptions: {
+        removeOnComplete: {
+          age: 60,
+        },
+      },
     }),
     MailerModule.forRoot({
       transport: {
-        host: process.env.SMTP_HOST,
-        port: +process.env.SMTP_PORT,
+        host: process.env.ETHEREAL_FAKE_SMTP_HOST,
+        port: +process.env.ETHEREAL_FAKE_SMTP_PORT,
         auth: {
-          user: process.env.SMTP_USERNAME,
-          pass: process.env.SMTP_PASSWORD,
+          user: process.env.ETHEREAL_FAKE_SMTP_USERNAME,
+          pass: process.env.ETHEREAL_FAKE_SMTP_PASSWORD,
         },
       },
     }),

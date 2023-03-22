@@ -4,6 +4,8 @@ import { Job } from 'bull';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
+import * as pug from 'pug';
+import * as path from 'path';
 
 type JobEmailTokenDataProps = {
   user_id: string;
@@ -41,24 +43,51 @@ export class SendMailConsumerService {
     const textKeyProporse =
       type === 'VERIFY_EMAIL' ? 'verify your email' : 'reset your password';
 
-    await this.mailService.sendMail({
-      to: email,
-      from: 'Suport Digital Bank',
-      subject: subject,
-      text: `Please ${textKeyProporse} by clicking on the following link: ${process.env.DNS}:5001/${endpoint}/${token}.
-      This token is valid for ${valid_time}`,
-    });
+    try {
+      const templatePath = path.join(__dirname, 'templates', 'send-token.pug');
+
+      const html = pug.renderFile(templatePath, {
+        title: subject,
+        textKeyProporse,
+        link: process.env.DNS + endpoint + '/' + token,
+        valid_time,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        from: 'Suport Digital Bank',
+        subject: subject,
+        html,
+      });
+    } catch (err) {
+      console.error('ERROR on sending mail: ', err);
+    }
   }
 
   @Process('send-mail')
   async sendMailJob(job: Job<JobEmailDataProps>) {
     const { email, subject, text } = job.data;
-    await this.mailService.sendMail({
-      to: email,
-      from: 'Suport Digital Bank',
-      subject: subject,
-      text,
-    });
+
+    try {
+      const templatePath = path.join(
+        __dirname,
+        'templates',
+        'password-redifined.pug',
+      );
+      const html = pug.renderFile(templatePath, {
+        title: subject,
+        text,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        from: 'Suport Digital Bank',
+        subject: subject,
+        html,
+      });
+    } catch (err) {
+      console.error('ERROR on sending mail: ', err);
+    }
   }
 
   @OnQueueFailed()

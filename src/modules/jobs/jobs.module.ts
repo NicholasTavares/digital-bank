@@ -18,17 +18,15 @@ import { InterestRateConsumerService } from './interest-rate-consumer.service';
           delay: 1000 * 10,
           type: 'fixed',
         },
-        removeOnComplete: true,
       },
     }),
     BullModule.registerQueue({
       name: 'interest-rate-queue',
       defaultJobOptions: {
         backoff: {
-          delay: 1000 * 60,
+          delay: 5000 * 60,
           type: 'fixed',
         },
-        removeOnComplete: true,
       },
     }),
     VerificationMailTokensModule,
