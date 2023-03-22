@@ -47,6 +47,8 @@ jobs:
       id: run-analysis
       with:
         category: 'code_ql'
+        format: 'sarif'
+        output: 'codeql-results.sarif'
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
