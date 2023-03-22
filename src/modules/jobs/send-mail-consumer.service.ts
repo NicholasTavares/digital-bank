@@ -43,13 +43,25 @@ export class SendMailConsumerService {
     const textKeyProporse =
       type === 'VERIFY_EMAIL' ? 'verify your email' : 'reset your password';
 
-    await this.mailService.sendMail({
-      to: email,
-      from: 'Suport Digital Bank',
-      subject: subject,
-      text: `Please ${textKeyProporse} by clicking on the following link: ${process.env.DNS}:5001/${endpoint}/${token}.
-      This token is valid for ${valid_time}`,
-    });
+    try {
+      const templatePath = path.join(__dirname, 'templates', 'send-token.pug');
+
+      const html = pug.renderFile(templatePath, {
+        title: subject,
+        textKeyProporse,
+        link: process.env.DNS + endpoint + '/' + token,
+        valid_time,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        from: 'Suport Digital Bank',
+        subject: subject,
+        html,
+      });
+    } catch (err) {
+      console.error('ERROR on sending mail: ', err);
+    }
   }
 
   @Process('send-mail')
