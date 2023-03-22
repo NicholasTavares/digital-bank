@@ -29,6 +29,11 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
       },
+      defaultJobOptions: {
+        removeOnComplete: {
+          age: 60,
+        },
+      },
     }),
     MailerModule.forRoot({
       transport: {
