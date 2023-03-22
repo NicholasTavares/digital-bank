@@ -37,8 +37,11 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+      with:
+        category: 'code_ql'
       
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: ./codeql-results.sarif
+        sarif_file: codeql-results.sarif
+        category: code_ql
