@@ -4,14 +4,14 @@ services:
   api:
     build: .
     restart: always
-    container_name: api-ngcash
+    container_name: api-digital-bank
     depends_on:
       - db
     ports:
-      - 5001:5001
+      - 5000:5001
     volumes:
-      - ./src:/usr/ngcash/src
-      - ./.env:/usr/ngcash/.env
+      - ./src:/usr/digital-bank/src
+      - ./.env:/usr/digital-bank/.env
     command: yarn start:dev
 
   redis:
@@ -20,16 +20,16 @@ services:
     ports:
       - 6379:6379
     volumes: 
-      - /redis_data:/data
+      - /redis_bank_data:/data
 
   db:
-    container_name: db-ngcash
+    container_name: db-digital-bank
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ngcash
+      POSTGRES_PASSWORD: digitalbank
     volumes:
-      - .:/ngcash/datadir
+      - .:/digital-bank/datadir
     ports:
       - '5433:5432'
     restart: always
