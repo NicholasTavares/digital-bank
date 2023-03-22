@@ -2,10 +2,17 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ master ]
+    branches: ['master']
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
+    branches: ['master']
+    paths-ignore:
+      - '**/*Spec.js'
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.spec.js'
+      - '**/*.config.js'
   schedule:
     - cron: '35 14 * * 3'
 
@@ -37,14 +44,12 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+      id: run-analysis
       with:
         category: 'code_ql'
-      
-    - name: List files in working directory
-      run: ls -R $GITHUB_WORKSPACE
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: codeql-results.sarif
+        sarif_file: ${{ steps.run-analysis.outputs.sarif }}
         category: code_ql
