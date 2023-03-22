@@ -2,9 +2,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   schedule:
     - cron: '39 7 * * 1'
 
@@ -20,27 +20,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language: ['javascript']
+
     steps:
-    - name: Checkout git repo
-      uses: actions/checkout@v3
+      - name: Checkout git repo
+        uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: javascript
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: /language:javascript/src
-        format: 'sarif'
-        output: 'codeql-results.sarif'
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: /language:javascript/analysis1
+          format: 'sarif'
+          output: 'codeql-results.sarif'
 
-    # Upload SARIF results to GitHub
-    - name: Upload SARIF Results
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: codeql-results.sarif
+      # Upload SARIF results to GitHub
+      - name: Upload SARIF Results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: codeql-results.sarif
