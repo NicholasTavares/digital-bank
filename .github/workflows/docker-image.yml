@@ -68,7 +68,8 @@ jobs:
 
       - name: Docker Build and Push to Docker Hub
         uses: docker/build-push-action@v4
+        COMMIT_TAG=$(git rev-parse --short HEAD)
         with:
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:$COMMIT_TAG
           labels: ${{ steps.docker_meta.outputs.labels }}
