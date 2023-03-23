@@ -1,4 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -8,12 +13,12 @@ import { SendMailProducerService } from '../jobs/send-mail-producer.service';
 import { CreateResetPasswordUserDTO } from './dto/create-reset-password-user.dto';
 import { ResetPasswordTokenService } from '../reset_password_token/reset_password_token.service';
 import { VerificationMailTokensService } from '../verification_mail_tokens/verification_mail_tokens.service';
-import Redis from 'ioredis';
 import * as bcrypt from 'bcrypt';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
-const redisClient = new Redis();
+import { REDIS_CLIENT } from '../../common/providers/redis.provider';
+import Redis from 'ioredis';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +27,7 @@ export class UsersService {
     private readonly sendMailProducerService: SendMailProducerService,
     private readonly verificationMailTokensService: VerificationMailTokensService,
     private readonly resetPasswordTokenService: ResetPasswordTokenService,
+    @Inject(REDIS_CLIENT) private readonly redisClient: Redis,
     private readonly configService: ConfigService,
   ) {}
 
@@ -240,10 +246,10 @@ export class UsersService {
       timeZone: 'America/Sao_paulo',
     });
 
-    const keys = await redisClient.keys(`user:${user.id}:jwt:*`);
+    const keys = await this.redisClient.keys(`user:${user.id}:jwt:*`);
 
     if (keys.length > 0) {
-      await redisClient.del(keys);
+      await this.redisClient.del(keys);
     }
 
     return await this.sendMailProducerService.sendMail({
