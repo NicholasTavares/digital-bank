@@ -21,4 +21,4 @@ A Digital Bank API. This is a portfolio project that allow users to send and rec
 - `Jest`: Library for unit test.
 
 ## :shield: Security Tests
-Each commit is analyzed for known security vulnerabilities using [CodeQL](https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/) for code. Each pull request of merge is analyzed by [Trivy](https://trivy.dev/) for docker images. Both analyzes are workflows that are dispatched by pull requests of merges.
+Each commit is analyzed for known security vulnerabilities using [CodeQL](https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/) for code. Each pull request or merge is analyzed by [Trivy](https://trivy.dev/) for docker images. Both analyzes are workflows that are dispatched by pull requests of merges.
