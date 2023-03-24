@@ -7,20 +7,13 @@ services:
     container_name: api-digital-bank
     depends_on:
       - db
+      - redis
     ports:
-      - 5000:5001
+      - 5000:5000
     volumes:
       - ./src:/usr/digital-bank/src
       - ./.env:/usr/digital-bank/.env
     command: yarn start:dev
-
-  redis:
-    image: redis:7-bullseye
-    restart: always
-    ports:
-      - 6379:6379
-    volumes: 
-      - /redis_bank_data:/data
 
   db:
     container_name: db-digital-bank
@@ -31,5 +24,36 @@ services:
     volumes:
       - .:/digital-bank/datadir
     ports:
-      - '5433:5432'
+      - 5433:5432
     restart: always
+
+  redis:
+    container_name: redis-digital-bank
+    image: redis:7-bullseye
+    ports:
+      - 6379:6379
+    volumes: 
+      - /redis_bank_data:/data
+
+  locust_master:
+    build: 
+      context: ./load_test
+    working_dir: /mnt/locust
+    restart: always
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./load_test:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master
+
+  locust_worker:
+    build: 
+      context: ./load_test
+    restart: always
+    working_dir: /mnt/locust
+    depends_on:
+      - locust_master
+    volumes:
+      - ./load_test:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust_master
+    
