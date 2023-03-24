@@ -36,3 +36,6 @@ lerna-debug.log*
 
 # ENV
 .env
+
+# Locust
+/load_test/__pycache__
