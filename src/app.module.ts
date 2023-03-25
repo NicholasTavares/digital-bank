@@ -16,11 +16,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { VerificationMailTokensModule } from './modules/verification_mail_tokens/verification_mail_tokens.module';
 import { ResetPasswordTokenModule } from './modules/reset_password_token/reset_password_token.module';
-import dbConfig from './config/db.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.middleware';
+import { GlobalRedisModule } from './common/providers/global-redis.module';
+import dbConfig from './config/db.config';
 
 @Module({
   imports: [
@@ -30,9 +31,7 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
         port: +process.env.REDIS_PORT,
       },
       defaultJobOptions: {
-        removeOnComplete: {
-          age: 60,
-        },
+        removeOnComplete: true,
       },
     }),
     MailerModule.forRoot({
@@ -49,6 +48,7 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
+      envFilePath: '.env',
     }),
     MulterModule.register({
       storage: diskStorage({}),
@@ -81,6 +81,7 @@ import { CheckTokenMiddleware } from './modules/auth/middlewares/check-token.mid
     JobsModule,
     VerificationMailTokensModule,
     ResetPasswordTokenModule,
+    GlobalRedisModule,
   ],
   controllers: [],
   providers: [],

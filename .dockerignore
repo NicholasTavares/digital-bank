@@ -4,3 +4,4 @@ dist
 *Dockerfile*
 *docker-compose*
 node_modules
+load_test

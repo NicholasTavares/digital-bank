@@ -1,18 +1,19 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { compareSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import Redis from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
 import { PayloadJWT } from './interfaces/payload-jwt.interface';
-const redisClient = new Redis();
+import { REDIS_CLIENT } from '../../common/providers/redis.provider';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    @Inject(REDIS_CLIENT) private readonly redisClient: Redis,
   ) {}
 
   async login(user) {
@@ -32,7 +33,7 @@ export class AuthService {
       complete: true,
     }) as PayloadJWT;
 
-    await redisClient.set(
+    await this.redisClient.set(
       `user:${user.id}:jwt:${token_id}`,
       'JWT_LOGIN',
       'EXAT',
@@ -66,13 +67,13 @@ export class AuthService {
   }
 
   async removeTokensFromWhiteList(user_id: string) {
-    const keys = await redisClient.keys(`user:${user_id}:jwt:*`);
+    const keys = await this.redisClient.keys(`user:${user_id}:jwt:*`);
 
     if (keys.length === 0) {
       return;
     }
 
-    await redisClient.del(keys);
+    await this.redisClient.del(keys);
   }
 
   async removeFromWhiteList(token: string) {
@@ -84,7 +85,7 @@ export class AuthService {
       complete: true,
     }) as PayloadJWT;
 
-    await redisClient.del(
+    await this.redisClient.del(
       `user:${decodedToken.payload.sub}:jwt:${decodedToken.payload.jti}`,
     );
   }
@@ -94,7 +95,7 @@ export class AuthService {
       complete: true,
     }) as PayloadJWT;
 
-    const result = await redisClient.get(
+    const result = await this.redisClient.get(
       `user:${decodedToken.payload.sub}:jwt:${decodedToken.payload.jti}`,
     );
 
