@@ -48,6 +48,7 @@ import dbConfig from './config/db.config';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
+      envFilePath: '.env',
     }),
     MulterModule.register({
       storage: diskStorage({}),
