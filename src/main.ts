@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { FormatErrors } from './utils/formatErros.util';
 import { config } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { setupDocumentation } from './common/documentation/build-swagger.document';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,10 @@ async function bootstrap() {
     region: configService.get('AWS_REGION'),
   });
 
-  await app.listen(process.env.APP_PORT);
+  if (process.env.API_MODE === 'DEV') {
+    setupDocumentation(app);
+  }
+
+  await app.listen(process.env.APP_PORT || 5001);
 }
 bootstrap();
