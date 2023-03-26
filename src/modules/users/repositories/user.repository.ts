@@ -138,8 +138,18 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async softRemoveUser(id: string) {
-    const user = await this.findUser(id);
+  async softRemoveUser(user_id: string) {
+    const user = await this.findOne({
+      where: {
+        id: user_id,
+      },
+      relations: ['account'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
     await this.softRemove(user);
   }
 }
