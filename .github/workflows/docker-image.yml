@@ -66,11 +66,15 @@ jobs:
           tags: |
             type=raw,value=07
 
+      - name: Get short commit SHA
+        id: last_commit_hash
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
       - name: Docker Build and Push to Docker Hub
         uses: docker/build-push-action@v4
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:${{ steps.last_commit_hash.outputs.sha_short }}
             ${{ secrets.DOCKERHUB_USERNAME }}/digital-bank:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
