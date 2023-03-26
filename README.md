@@ -20,6 +20,8 @@ A Digital Bank API. This is a portfolio project that allow users to send and rec
 - `GitHub Actions`: Workflows that are used for Continuous Integration. In this project GitHub Actions is used for scan docker images ([Trivy](https://trivy.dev/)), scan code ([CodeQL](https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/)) and build image of the project to [Docker Hub](https://hub.docker.com/search?q=).
 - `Jest`: Library for unit test.
 - `Python Locust`: [Library from Python](https://locust.io/) for load testing.
+- `Swagger`: Library for endpoints documentation. NestJS provide a native solution for documentation: [@nestjs/swagger
+](https://docs.nestjs.com/openapi/introduction).
 
 ## :shield: Security Tests
 Each commit is analyzed for known security vulnerabilities using [CodeQL](https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/) for code. Each pull request or merge is analyzed by [Trivy](https://trivy.dev/) for docker images. Both analyzes are workflows that are dispatched by pull requests of merges.
