@@ -4,6 +4,16 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["modules/jobs/templates/*"],
-    "watchAssets": true
+    "watchAssets": true,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger/plugin",
+        "options": {
+          "classValidatorShim": true,
+          "introspectComments": true,
+          "dtoFileNameSuffix": "dto"
+        }
+      }
+    ]
   }
 }
