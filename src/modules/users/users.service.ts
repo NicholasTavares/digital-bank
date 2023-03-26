@@ -259,7 +259,13 @@ export class UsersService {
     });
   }
 
-  async remove(id: string) {
-    await this.userRepository.softRemoveUser(id);
+  async remove(user_id: string) {
+    await this.userRepository.softRemoveUser(user_id);
+
+    const keys = await this.redisClient.keys(`user:${user_id}:jwt:*`);
+
+    if (keys.length > 0) {
+      await this.redisClient.del(keys);
+    }
   }
 }
