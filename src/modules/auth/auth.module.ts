@@ -18,7 +18,7 @@ import { CheckTokenMiddleware } from './middlewares/check-token.middleware';
     UsersModule,
     JwtModule.register({
       privateKey: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
   ],
   controllers: [AuthController],
